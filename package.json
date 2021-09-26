@@ -1,0 +1,16 @@
+{
+  "name": "labyrinth-of-death",
+  "version": "1.0.0",
+  "description": "",
+  "main": "game.js",
+  "scripts": {
+    "start": "live-server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "live-server": "^1.2.1",
+    "phaser": "^3.55.2"
+  }
+}
