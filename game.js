@@ -1,6 +1,8 @@
 'use strict';
 // import Phaser from 'phaser';
-import level from './dungeon.js';
+import turnManager from './turnManager.js';
+import dungeon from './dungeon.js';
+import PlayerCharacter from './player.js';
 
 const scene = {
     preload: function () { 
@@ -12,39 +14,18 @@ const scene = {
         })
     },
     create: function() {
-        // let level = [
-        //     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        //     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        // ]
+        dungeon.initialize(this);
 
-        // Just convert the walls from 1 to 554.
-        const wall = 554;
-        const floor = 0;
+        dungeon.player = new PlayerCharacter(15, 15);
 
-        let dungeon = level.map(r => r.map(t => t == 1 ? wall : floor))
-
-        // Draw the tilemap
-        const tileSize = 16;
-        const config = {
-            data: dungeon,
-            tileWidth: tileSize,
-            tileHeight: tileSize,
-        }
-
-        const map = this.make.tilemap(config);
-        const tileset = map.addTilesetImage('tiles', 'tiles', tileSize, tileSize, 0, 1);
-        const ground = map.createLayer(0, tileset, 0, 0);
+        turnManager.addEntity(dungeon.player);
     },
     update: function() {
-        
+        if (turnManager.over()) {
+            turnManager.refresh();
+        }
+
+        turnManager.turn();
     }
 }
 
