@@ -1,6 +1,6 @@
 // import PF from 'pathfinding';
 
-import dungeon from './dungeon.js';
+import dungeon from '../dungeon.js';
 
 const rn = Math.floor(Math.random() * 3);
 
@@ -8,7 +8,7 @@ class BasicMonster {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.name = 'A Skeleton';
+        this.name = 'Skeleton';
         this.tile = 26; // sprite tile number for monster
         this.hp = 1; // health points
         this.ap = 1; // action points
@@ -55,11 +55,33 @@ class BasicMonster {
     }
     
     over() {
-        return this.mp == 0 && this.ap == 0 && !this.moving;
+        let isOver = this.mp == 0 && this.ap == 0 && !this.moving;
+
+        if (isOver && this.UItext) {
+            this.UItext.setColor('#cfc6b8');
+        } else {
+            this.UItext.setColor('#fff');
+        }
+
+        return isOver;
     }
 
     onDestroy() {
-        console.log(`${this.name} was killed`);
+        dungeon.log(`${this.name} was killed`);
+
+        this.UIsprite.setAlpha(0.2);
+        this.UItext.setAlpha(0.2);
+    }
+
+    createUI(config) {
+        let scene = config.scene;
+        let x = config.x;
+        let y = config.y;
+
+        this.UIsprite = scene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
+        this.UItext = scene.add.text(x + 20, y, this.name, {font: '16px Arial', fill: '#cfc6b8'});
+
+        return 30;
     }
 }
 

@@ -4,6 +4,7 @@ import tm from './turnManager.js';
 import level from './level.js';
 
 let dungeon = {
+    msgs: [],  // array for messages
     sprites: {
         floor: 0,
         wall: 554,
@@ -39,7 +40,7 @@ let dungeon = {
         this.map = map.createLayer(0, tileset, 0, 0);
     },
 
-    isWalkableTile: function(x, y) {
+    isWalkableTile: function (x, y) {
         // check all entities
         let allEntities = [...tm.entities];
 
@@ -59,7 +60,7 @@ let dungeon = {
     entityAtTile: function (x, y) {
         let allEntities = [...tm.entities];
 
-        for (let e = 0; e < allEntities.length; e++ ) {
+        for (let e = 0; e < allEntities.length; e++) {
             let entity = allEntities[e];
 
             if (entity.x == x && entity.y == y) {
@@ -70,7 +71,7 @@ let dungeon = {
         return false;
     },
 
-    initializeEntity: function(entity) {
+    initializeEntity: function (entity) {
         let x = this.map.tileToWorldX(entity.x);
         let y = this.map.tileToWorldY(entity.y);
 
@@ -78,13 +79,13 @@ let dungeon = {
         entity.sprite.setOrigin(0);
     },
 
-    removeEntity: function(entity) {
+    removeEntity: function (entity) {
         tm.entities.delete(entity);
         entity.sprite.destroy();
         entity.onDestroy();
     },
 
-    moveEntityTo: function(entity, x, y) {
+    moveEntityTo: function (entity, x, y) {
         entity.moving = true;
 
         this.scene.tweens.add({
@@ -101,11 +102,11 @@ let dungeon = {
         });
     },
 
-    distanceBetweenEntities: function(e1, e2) {
+    distanceBetweenEntities: function (e1, e2) {
         let grid = new PF.Grid(dungeon.level);
         let finder = new PF.AStarFinder({
             allowDiagonal: true,
-        })
+        });
 
         let path = finder.findPath(e1.x, e1.y, e2.x, e2.y, grid);
 
@@ -116,7 +117,7 @@ let dungeon = {
         }
     },
 
-    attackEntity: function(attacker, target) {
+    attackEntity: function (attacker, target) {
         attacker.moving = true;
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;
@@ -132,8 +133,8 @@ let dungeon = {
                 let damage = attacker.attack();
 
                 target.hp -= damage;
-                console.log(
-                    `${attacker.name} does ${damage} damage to ${target.name} which now has ${target.hp} life left`
+                this.log(
+                    `${attacker.name} does ${damage} damage to ${target.name}.`
                 );
 
                 if (target.hp <= 0) {
@@ -148,6 +149,11 @@ let dungeon = {
             delay: attacker.tweens * 200,
             yoyo: true,
         });
+    },
+
+    log: function (text) {
+        this.msgs.unshift(text);
+        this.msgs = this.msgs.slice(0, 8);
     }
 };
 
