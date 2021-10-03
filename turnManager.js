@@ -1,43 +1,29 @@
-const turnManager = {
+const tm = { // turn manager
     entities: new Set(),
     // interval: 150,
     // lastCall: Date.now(),
 
-    addEntity: (entity) => turnManager.entities.add(entity),
-    removeEntity: (entity) => turnManager.entities.remove(entity),
+    addEntity: (entity) => tm.entities.add(entity),
+    removeEntity: (entity) => tm.entities.remove(entity),
 
     refresh: () => {
-        turnManager.entities.forEach((entity) => entity.refresh());
-        turnManager.currentIndex = 0;
+        tm.entities.forEach((entity) => entity.refresh());
+        tm.currentIndex = 0;
     },
     currentIndex: 0,
     turn: () => {
-        if (turnManager.entities.size > 0) {
-            let entities = [...turnManager.entities];
-            let entity = entities[turnManager.currentIndex];
+        if (tm.entities.size > 0) {
+            let entities = [...tm.entities];
+            let entity = entities[tm.currentIndex];
 
             if (!entity.over()) {
                 entity.turn();
             } else {
-                turnManager.currentIndex++;
+                tm.currentIndex++;
             }
         }
-        // let now = Date.now();
-        // let limit = turnManager.lastCall + turnManager.interval;
-
-        // if (now > limit) {
-        //     for (let entity of turnManager.entities) {
-        //         if (!entity.over()) {
-        //             entity.turn();
-
-        //             break;
-        //         }
-        //     }
-
-        //     turnManager.lastCall = Date.now();
-        // }
     },
-    over: () => [...turnManager.entities].every((entity) => entity.over()),
+    over: () => [...tm.entities].every((entity) => entity.over()),
 };
 
-export default turnManager;
+export default tm;

@@ -1,8 +1,9 @@
-'use strict';
+// 'use strict';
 // import Phaser from 'phaser';
-import turnManager from './turnManager.js';
+import tm from './turnManager.js';
 import dungeon from './dungeon.js';
 import PlayerCharacter from './player.js';
+import BasicMonster from './monster.js';
 
 const scene = {
     preload: function () { 
@@ -18,14 +19,15 @@ const scene = {
 
         dungeon.player = new PlayerCharacter(15, 15);
 
-        turnManager.addEntity(dungeon.player);
+        tm.addEntity(dungeon.player);
+        tm.addEntity(new BasicMonster(70, 8));
     },
     update: function() {
-        if (turnManager.over()) {
-            turnManager.refresh();
+        if (tm.over()) {
+            tm.refresh();
         }
 
-        turnManager.turn();
+        tm.turn();
     }
 }
 
