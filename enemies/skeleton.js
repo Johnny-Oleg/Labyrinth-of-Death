@@ -4,17 +4,22 @@ import dungeon from '../dungeon.js';
 
 const rn = Math.floor(Math.random() * 3);
 
-class BasicMonster {
+class Skeleton {
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.name = 'Skeleton';
+        this.type = 'enemy';
         this.tile = 26; // sprite tile number for monster
         this.hp = 1; // health points
         this.ap = 1; // action points
         this.mp = 1; // movement points
 
         dungeon.initializeEntity(this);
+    }
+
+    attack() {
+        return Phaser.Math.Between(1, 3); // random number for dealing damage
     }
 
     refresh() {
@@ -49,10 +54,6 @@ class BasicMonster {
             this.ap -= 1;
         }
     }
-
-    attack() {
-        return rn; // random number for dealing damage
-    }
     
     over() {
         let isOver = this.mp == 0 && this.ap == 0 && !this.moving;
@@ -85,4 +86,4 @@ class BasicMonster {
     }
 }
 
-export default BasicMonster;
+export default Skeleton;

@@ -1,11 +1,11 @@
 const tm = {                // <- turn manager
     entities: new Set(),
 
-    addEntity: (entity) => tm.entities.add(entity),
-    removeEntity: (entity) => tm.entities.remove(entity),
+    addEntity: entity => tm.entities.add(entity),
+    removeEntity: entity => tm.entities.remove(entity),
 
     refresh: () => {
-        tm.entities.forEach((entity) => entity.refresh());
+        tm.entities.forEach(entity => entity.refresh());
         tm.currentIndex = 0;
     },
     currentIndex: 0,
@@ -21,7 +21,7 @@ const tm = {                // <- turn manager
             }
         }
     },
-    over: () => [...tm.entities].every((entity) => entity.over()),
+    over: () => [...tm.entities].every(entity => entity.over()),
 };
 
 export default tm;

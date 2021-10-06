@@ -1,4 +1,5 @@
 import dungeon from './dungeon.js';
+import Sword from './items/sword.js';
 
 const rn = Math.floor(Math.random() * 5);
 
@@ -7,12 +8,14 @@ class PlayerCharacter {
         this.x = x;
         this.y = y;
         this.name = 'Player';
-        this.tile = 29; // sprite tile number for main character
-        this.hp = 15; // health points
+        this.tile = 29; // sprite tile number for main character (28 with a sword | 29 -- spear)
+        this.hp = 20; // health points
         this.ap = 1; // action points
         this.mp = 1; // movement points
         this.moving = false;
         this.items = []; // array of items for player
+        this.items.push(new Sword()); // starting weapon
+        this.toggleItem(0);
         this.cursors = dungeon.scene.input.keyboard.createCursorKeys();
 
         dungeon.initializeEntity(this);
@@ -41,9 +44,17 @@ class PlayerCharacter {
             item.active = !item.active;
 
             if (item.active) {
-                dungeon.log(`${this.name} equips ${item.name}: ${item.description}.`);
+                dungeon.log(`${this.name} equips ${item.name}: ${item.description}`);
 
                 item.equip(itemNumber);
+            }
+
+            if (item.class === 'sword') { // change player sprite regardless of weapon
+                this.tile = 28;
+            }
+
+            if (item.class === 'spear') { // change player sprite regardless of weapon
+                this.tile = 29;
             }
         }
     }
@@ -80,12 +91,19 @@ class PlayerCharacter {
         return this.items.filter(item => item.active);
     }
 
+    attack() {
+        const items = this.equippedItems();
+
+        const combineDamage = (total, item) => total + item.damage();
+        const damage = items.reduce(combineDamage, 1);
+
+        return damage; // random number for dealing damage
+    }
+
     refresh() {
         this.hp < 6 && this.hp++;     // health regen by 1
         this.mp = 1;
         this.ap = 1;
-
-        this.refreshUI();
     }
 
     turn() {
@@ -123,13 +141,13 @@ class PlayerCharacter {
                     let entity = dungeon.entityAtTile(newX, newY);
 
                     if (entity && entity.type === 'enemy' && this.ap > 0) {
-                        dungeon.attackEntity(this, entity);
+                        dungeon.attackEntity(this, entity); // attacking if enemy is found
 
                         this.ap -= 1;
                     }
 
                     if (entity && entity.type === 'item' && this.ap > 0) {
-                        this.items.push(entity);
+                        this.items.push(entity);  // picking items
 
                         dungeon.itemPicked(entity);
                         dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
@@ -141,28 +159,21 @@ class PlayerCharacter {
                     }
                 }
 
-                if (newX !== oldX || newY !== oldY) {
+                if (newX !== oldX || newY !== oldY) { // moving to...
                     dungeon.moveEntityTo(this, newX, newY);
                 }
             }
+
+            if (this.hp <= 6) { // TODO: set color back to normal
+                this.sprite.tint = Phaser.Display.Color.GetColor(255, 200, 0);
+            }
+    
+            if (this.hp <= 3) {  // TODO: set color back to normal
+                this.sprite.tint = Phaser.Display.Color.GetColor(255, 0, 0);
+            }
         }
 
-        if (this.hp <= 6) { // TODO: set color back to normal
-            this.sprite.tint = Phaser.Display.Color.GetColor(255, 200, 0);
-        }
-
-        if (this.hp <= 3) {  // TODO: set color back to normal
-            this.sprite.tint = Phaser.Display.Color.GetColor(255, 0, 0);
-        }
-    }
-
-    attack() {
-        const items = this.equippedItems();
-
-        const combineDamage = ((total, item) => total + item.damage());
-        const damage = items.reduce(combineDamage, 0);
-
-        return damage; // or rn: random number for dealing damage
+        this.refreshUI(); // update item display
     }
 
     over() {
@@ -190,20 +201,20 @@ class PlayerCharacter {
     }
 
     createUI(config) {
-        let scene = config.scene;
+        this.UIscene = config.scene;
         let x = config.x;
         let y = config.y;
         let ah = 0; // accumulated height
 
         // character sprite and name
-        this.UIsprite = scene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
-        this.UIheader = scene.add.text(x + 20, y, this.name, {
+        this.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
+        this.UIheader = this.UIscene.add.text(x + 20, y, this.name, {
             font: '16px Arial',
             color: '#cfc6b8',
         });
 
         // character stats
-        this.UIstatsText = scene.add.text(
+        this.UIstatsText = this.UIscene.add.text(
             x + 20,
             y + 20,
             `Hp: ${this.hp}\nMp: ${this.mp}\nAp: ${this.ap}`, {
@@ -223,7 +234,7 @@ class PlayerCharacter {
                 let rx = x + 25 * cell;
                 let ry = y + 50 + 25 * row;
 
-                this.UIitems.push(scene.add
+                this.UIitems.push(this.UIscene.add
                     .rectangle(rx, ry, 20, 20, 0xcfc6b8, 0.3)
                     .setOrigin(0)
                 )
@@ -232,7 +243,7 @@ class PlayerCharacter {
 
         ah += 90;
 
-        scene.add.line(x+5, y+120, 0, 10, 175, 10, 0xcfc6b8).setOrigin(0);  // separator
+        this.UIscene.add.line(x + 5, y + 120, 0, 10, 175, 10, 0xcfc6b8).setOrigin(0);  // separator
 
         return ah;
     }

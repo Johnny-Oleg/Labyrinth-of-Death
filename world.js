@@ -1,7 +1,12 @@
 import tm from './turnManager.js';
 import dungeon from './dungeon.js';
+
 import PlayerCharacter from './player.js';
 import Skeleton from './enemies/skeleton.js';
+import Gem from './items/gem.js';
+import CursedGem from './items/cursedGem.js';
+import LongSword from './items/longSword.js';
+import Potion from './items/potion.js';
 
 const world = {
     key: 'world-scene',
@@ -20,12 +25,18 @@ const world = {
 
         dungeon.player = new PlayerCharacter(15, 15); // load game entities
 
-        tm.addEntity(dungeon.player);
-        tm.addEntity(new Skeleton(20, 10));
+        tm.addEntity(dungeon.player);         // adding player character to level
+
+        tm.addEntity(new Skeleton(20, 10));   // adding enemies to level
         tm.addEntity(new Skeleton(21, 11));
         tm.addEntity(new Skeleton(70, 8));
         tm.addEntity(new Skeleton(29, 24));
         tm.addEntity(new Skeleton(29, 20));
+
+        tm.addEntity(new Gem(21, 21));        // adding items to level
+        tm.addEntity(new CursedGem(15, 20));
+        tm.addEntity(new LongSword(18, 22));
+        tm.addEntity(new Potion(18, 18));
 
         let camera = this.cameras.main; // set camera, causes game viewport to shrink on the right side freeing space for the UI scene
         camera.setViewport(0, 0, camera.worldView.width - 200, camera.worldView.height);

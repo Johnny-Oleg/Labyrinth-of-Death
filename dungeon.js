@@ -74,13 +74,13 @@ let dungeon = {
         if (entity.x && entity.y) {
             let x = this.map.tileToWorldX(entity.x);
             let y = this.map.tileToWorldY(entity.y);
-            
+
             entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
             entity.sprite.setOrigin(0);
         }
     },
 
-    removeEntity: function (entity) {
+    removeEntity: function(entity) {
         tm.entities.delete(entity);
         entity.sprite.destroy();
 
@@ -165,6 +165,6 @@ let dungeon = {
         this.msgs.unshift(text);
         this.msgs = this.msgs.slice(0, 8);
     }
-};
+}
 
 export default dungeon;
