@@ -1,12 +1,12 @@
 import dungeon from '../dungeon.js';
 import GenericItem from './genericItem.js';
 
-class Potion extends GenericItem {
+class HolyPotion extends GenericItem {
     constructor(x, y) {
         super(x, y);
 
         this.name = 'Holy Potion';
-        this.tile = 656;             // 761?
+        this.tile = 657;             // 761?
         this.description = 'A potion that removes cursed items when equipped.';
 
         dungeon.initializeEntity(this);
@@ -20,4 +20,4 @@ class Potion extends GenericItem {
     }
 }
 
-export default Potion;
+export default HolyPotion;

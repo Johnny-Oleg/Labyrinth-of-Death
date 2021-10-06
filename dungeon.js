@@ -127,7 +127,7 @@ let dungeon = {
         }
     },
 
-    attackEntity: function(attacker, target) {
+    attackEntity: function(attacker, target, ranged = false) {
         attacker.moving = true;
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;

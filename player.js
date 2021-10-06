@@ -9,7 +9,7 @@ class PlayerCharacter {
         this.y = y;
         this.name = 'Player';
         this.tile = 29; // sprite tile number for main character (28 with a sword | 29 -- spear)
-        this.hp = 20; // health points
+        this.hp = 15; // health points
         this.ap = 1; // action points
         this.mp = 1; // movement points
         this.moving = false;
@@ -164,13 +164,17 @@ class PlayerCharacter {
                 }
             }
 
-            if (this.hp <= 6) { // TODO: set color back to normal
+            if (this.hp > 6) {
+                this.sprite.tint = Phaser.Display.Color.GetColor(255, 255, 255);
+            }
+
+            if (this.hp <= 6) { 
                 this.sprite.tint = Phaser.Display.Color.GetColor(255, 200, 0);
             }
-    
-            if (this.hp <= 3) {  // TODO: set color back to normal
+            
+            if (this.hp <= 3) {
                 this.sprite.tint = Phaser.Display.Color.GetColor(255, 0, 0);
-            }
+            } 
         }
 
         this.refreshUI(); // update item display

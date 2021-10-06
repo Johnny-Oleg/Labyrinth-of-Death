@@ -1,6 +1,9 @@
 // import PF from 'pathfinding';
-
+import tm from '../turnManager.js';
 import dungeon from '../dungeon.js';
+import Gem from '../items/gem.js';
+import LongSword from '../items/longSword.js';
+import HolyPotion from '../items/holyPotion.js';
 
 const rn = Math.floor(Math.random() * 3);
 
@@ -72,6 +75,20 @@ class Skeleton {
 
         this.UIsprite.setAlpha(0.2);
         this.UItext.setAlpha(0.2);
+
+        let x = this.x;           // possible loot drops
+        let y = this.y;
+
+        let lootDrops = [false, false, Gem, LongSword, HolyPotion]; // array of loot
+
+        let lootIndex = Phaser.Math.Between(0, lootDrops.length - 1); // choosing random loot
+
+        if (lootDrops[lootIndex]) {              // if loot exists drop it from enemy
+            let item = lootDrops[lootIndex];
+
+            tm.addEntity(new item(x, y));
+            dungeon.log(`${this.name} drops ${item.name}.`);
+        }
     }
 
     createUI(config) {
