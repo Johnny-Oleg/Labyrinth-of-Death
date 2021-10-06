@@ -11,7 +11,7 @@ let dungeon = {
     },
     tileSize: 16,
 
-    initialize: function (scene) {
+    initialize: function(scene) {
         this.scene = scene;
         this.level = level;
 
@@ -40,14 +40,13 @@ let dungeon = {
         this.map = map.createLayer(0, tileset, 0, 0);
     },
 
-    isWalkableTile: function (x, y) {
-        // check all entities
-        let allEntities = [...tm.entities];
+    isWalkableTile: function(x, y) {
+        let allEntities = [...tm.entities];                  // check all entities
 
         for (let e = 0; e < allEntities.length; e++) {
             let entity = allEntities[e];
 
-            if (entity.x == x && entity.y == y) {
+            if (entity.sprite && entity.x == x && entity.y == y) {
                 return false;
             }
         }
@@ -57,13 +56,13 @@ let dungeon = {
         return tileAtDestination.index !== dungeon.sprites.wall;
     },
 
-    entityAtTile: function (x, y) {
+    entityAtTile: function(x, y) {
         let allEntities = [...tm.entities];
 
         for (let e = 0; e < allEntities.length; e++) {
             let entity = allEntities[e];
 
-            if (entity.x == x && entity.y == y) {
+            if (entity.sprite && entity.x == x && entity.y == y) {
                 return entity;
             }
         }
@@ -71,21 +70,32 @@ let dungeon = {
         return false;
     },
 
-    initializeEntity: function (entity) {
-        let x = this.map.tileToWorldX(entity.x);
-        let y = this.map.tileToWorldY(entity.y);
-
-        entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
-        entity.sprite.setOrigin(0);
+    initializeEntity: function(entity) {
+        if (entity.x && entity.y) {
+            let x = this.map.tileToWorldX(entity.x);
+            let y = this.map.tileToWorldY(entity.y);
+            
+            entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
+            entity.sprite.setOrigin(0);
+        }
     },
 
     removeEntity: function (entity) {
         tm.entities.delete(entity);
         entity.sprite.destroy();
+
+        delete entity.sprite;
+
         entity.onDestroy();
     },
 
-    moveEntityTo: function (entity, x, y) {
+    itemPicked: function(entity) {
+        entity.sprite.destroy();
+
+        delete entity.sprite;
+    },
+
+    moveEntityTo: function(entity, x, y) {
         entity.moving = true;
 
         this.scene.tweens.add({
@@ -102,7 +112,7 @@ let dungeon = {
         });
     },
 
-    distanceBetweenEntities: function (e1, e2) {
+    distanceBetweenEntities: function(e1, e2) {
         let grid = new PF.Grid(dungeon.level);
         let finder = new PF.AStarFinder({
             allowDiagonal: true,
@@ -117,7 +127,7 @@ let dungeon = {
         }
     },
 
-    attackEntity: function (attacker, target) {
+    attackEntity: function(attacker, target) {
         attacker.moving = true;
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;
@@ -151,7 +161,7 @@ let dungeon = {
         });
     },
 
-    log: function (text) {
+    log: function(text) {
         this.msgs.unshift(text);
         this.msgs = this.msgs.slice(0, 8);
     }

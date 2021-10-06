@@ -1,7 +1,5 @@
-const tm = { // turn manager
+const tm = {                // <- turn manager
     entities: new Set(),
-    // interval: 150,
-    // lastCall: Date.now(),
 
     addEntity: (entity) => tm.entities.add(entity),
     removeEntity: (entity) => tm.entities.remove(entity),

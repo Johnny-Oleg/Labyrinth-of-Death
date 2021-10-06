@@ -12,14 +12,80 @@ class PlayerCharacter {
         this.ap = 1; // action points
         this.mp = 1; // movement points
         this.moving = false;
+        this.items = []; // array of items for player
         this.cursors = dungeon.scene.input.keyboard.createCursorKeys();
 
         dungeon.initializeEntity(this);
+
+        dungeon.scene.input.keyboard.on('keyup', e => {
+            let key = e.key;
+
+            if (!isNaN(Number(key))) {
+                key == 0 && (key = 10);
+
+                this.toggleItem(key - 1);
+            }
+        })
+    }
+
+    toggleItem(itemNumber) {
+        const item = this.items[itemNumber];
+
+        if (item) {
+            if (item.weapon) {
+                this.items.forEach(item => {
+                    item.active = item.weapon ? false : item.active;
+                })
+            }
+
+            item.active = !item.active;
+
+            if (item.active) {
+                dungeon.log(`${this.name} equips ${item.name}: ${item.description}.`);
+
+                item.equip(itemNumber);
+            }
+        }
+    }
+
+    removeItem(itemNumber) {
+        const item = this.items[itemNumber];
+
+        if (item) {
+            this.items.forEach(item => {
+                item.UIsprite.destroy();
+
+                delete item.UIsprite;
+            })
+
+            this.items = this.items.filter(i => i !== item);
+
+            this.refreshUI();
+        }
+    }
+
+    removeItemByProperty(prop, value) {
+        this.items.forEach(item => {
+            item.UIsprite.destroy();
+
+            delete item.UIsprite;
+        })
+
+        this.items = this.items.filter(item => item[prop] !== value);
+
+        this.refreshUI();
+    }
+
+    equippedItems() {
+        return this.items.filter(item => item.active);
     }
 
     refresh() {
+        this.hp < 6 && this.hp++;     // health regen by 1
         this.mp = 1;
         this.ap = 1;
+
+        this.refreshUI();
     }
 
     turn() {
@@ -54,16 +120,25 @@ class PlayerCharacter {
                 this.mp -= 1;
 
                 if (!dungeon.isWalkableTile(newX, newY)) {
-                    let enemy = dungeon.entityAtTile(newX, newY);
+                    let entity = dungeon.entityAtTile(newX, newY);
 
-                    if (enemy && this.ap > 0) {
-                        dungeon.attackEntity(this, enemy);
+                    if (entity && entity.type === 'enemy' && this.ap > 0) {
+                        dungeon.attackEntity(this, entity);
 
                         this.ap -= 1;
                     }
 
-                    newX = oldX;
-                    newY = oldY;
+                    if (entity && entity.type === 'item' && this.ap > 0) {
+                        this.items.push(entity);
+
+                        dungeon.itemPicked(entity);
+                        dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
+
+                        this.ap -= 1;
+                    } else {
+                        newX = oldX;
+                        newY = oldY;
+                    }
                 }
 
                 if (newX !== oldX || newY !== oldY) {
@@ -72,17 +147,22 @@ class PlayerCharacter {
             }
         }
 
-        if (this.hp <= 6) {
+        if (this.hp <= 6) { // TODO: set color back to normal
             this.sprite.tint = Phaser.Display.Color.GetColor(255, 200, 0);
         }
 
-        if (this.hp <= 3) {
+        if (this.hp <= 3) {  // TODO: set color back to normal
             this.sprite.tint = Phaser.Display.Color.GetColor(255, 0, 0);
         }
     }
 
     attack() {
-        return rn; // random number for dealing damage
+        const items = this.equippedItems();
+
+        const combineDamage = ((total, item) => total + item.damage());
+        const damage = items.reduce(combineDamage, 0);
+
+        return damage; // or rn: random number for dealing damage
     }
 
     over() {
@@ -155,6 +235,27 @@ class PlayerCharacter {
         scene.add.line(x+5, y+120, 0, 10, 175, 10, 0xcfc6b8).setOrigin(0);  // separator
 
         return ah;
+    }
+
+    refreshUI() {
+        for (let i = 0; i < this.items.length; i++) {
+            let item = this.items[i];
+
+            if (!item.UIsprite) {
+                let x = this.UIitems[i].x + 10;
+                let y = this.UIitems[i].y + 10;
+
+                item.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', item.tile);
+            }
+
+            if (!item.active) {
+                item.UIsprite.setAlpha(0.5);
+                this.UIitems[i].setStrokeStyle();
+            } else {
+                item.UIsprite.setAlpha(1);
+                this.UIitems[i].setStrokeStyle(1, 0xffffff);
+            }
+        }
     }
 }
 
