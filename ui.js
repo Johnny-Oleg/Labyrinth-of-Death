@@ -12,7 +12,7 @@ const ui = {
             let iterator = tm.entities.values();
             
             let x = 80 * 16 - 190; // ui column horizontal position
-            let y = 10; // ui column vertical position
+            let y = 10;            // ui column vertical position
 
             for (let entity of iterator) {
                 if (typeof entity.createUI === "function") {

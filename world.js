@@ -1,7 +1,7 @@
 import tm from './turnManager.js';
 import dungeon from './dungeon.js';
 
-import PlayerCharacter from './player.js';
+import classes from './classes.js';
 import Skeleton from './enemies/skeleton.js';
 import Gem from './items/gem.js';
 import CursedGem from './items/cursedGem.js';
@@ -24,17 +24,21 @@ const world = {
     create: function () {
         dungeon.initialize(this);
 
-        dungeon.player = new PlayerCharacter(15, 15); // load game entities
+       // dungeon.player = new classes.Cleric(10, 10);    // load game entities
+        //dungeon.player = new classes.Dwarf(13, 13);
+        dungeon.player = new classes.Elf(14, 18);
+       // dungeon.player = new classes.Warrior(15, 15); 
+       // dungeon.player = new classes.Wizard(12, 16); 
 
-        tm.addEntity(dungeon.player);         // adding player character to level
+        tm.addEntity(dungeon.player);                 // adding player character to level
 
-        tm.addEntity(new Skeleton(20, 10));   // adding enemies to level
+        tm.addEntity(new Skeleton(20, 10));           // adding enemies to level
         tm.addEntity(new Skeleton(21, 11));
         tm.addEntity(new Skeleton(70, 8));
         tm.addEntity(new Skeleton(29, 24));
         tm.addEntity(new Skeleton(29, 20));
 
-        tm.addEntity(new Gem(21, 21));        // adding items to level
+        tm.addEntity(new Gem(21, 21));                // adding items to level
         tm.addEntity(new CursedGem(15, 20));
         tm.addEntity(new HealthPotion(45, 20));
         tm.addEntity(new HolyPotion(18, 18));

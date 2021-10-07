@@ -4,28 +4,28 @@ import tm from './turnManager.js';
 import level from './level.js';
 
 let dungeon = {
-    msgs: [],  // array for messages
+    msgs: [],        // array for messages
     sprites: {
-        floor: 0,
-        wall: 554,
+        floor: 1,    // 0 default
+        wall: 867,   // 554 default
     },
-    tileSize: 16,
+    tileSize: 16,    // 16 default
 
     initialize: function(scene) {
         this.scene = scene;
         this.level = level;
 
-        let levelWithTiles = level.map((row) =>
-            row.map((tile) =>
+        let levelWithTiles = level.map(row =>
+            row.map(tile =>
                 tile == 1 ? this.sprites.wall : this.sprites.floor
             )
-        );
+        )
 
         const config = {
             data: levelWithTiles,
             tileWidth: this.tileSize,
             tileHeight: this.tileSize,
-        };
+        }
 
         const map = scene.make.tilemap(config);
         const tileset = map.addTilesetImage(
@@ -35,7 +35,7 @@ let dungeon = {
             this.tileSize,
             0,
             1
-        );
+        )
 
         this.map = map.createLayer(0, tileset, 0, 0);
     },
@@ -77,6 +77,11 @@ let dungeon = {
 
             entity.sprite = this.scene.add.sprite(x, y, 'tiles', entity.tile);
             entity.sprite.setOrigin(0);
+
+            if (entity.tint) {                      // check if sprite has a color prop
+                entity.sprite.tint = entity.tint;
+                entity.sprite.tintFill = true;
+            }
         }
     },
 
@@ -109,14 +114,14 @@ let dungeon = {
             y: this.map.tileToWorldY(y),
             ease: 'Power2',
             duration: 200,
-        });
+        })
     },
 
     distanceBetweenEntities: function(e1, e2) {
         let grid = new PF.Grid(dungeon.level);
         let finder = new PF.AStarFinder({
             allowDiagonal: true,
-        });
+        })
 
         let path = finder.findPath(e1.x, e1.y, e2.x, e2.y, grid);
 
@@ -127,38 +132,89 @@ let dungeon = {
         }
     },
 
-    attackEntity: function(attacker, target, ranged = false) {
+    attackEntity: function(attacker, target, ranged = false, tint = false) {
         attacker.moving = true;
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;
 
-        this.scene.tweens.add({
-            targets: attacker.sprite,
-            onComplete: () => {
-                attacker.sprite.x = this.map.tileToWorldX(attacker.x);
-                attacker.sprite.y = this.map.tileToWorldY(attacker.y);
-                attacker.moving = false;
-                attacker.tweens -= 1;
+        if (!ranged) {                          // close melee attack
+            this.scene.tweens.add({
+                targets: attacker.sprite,
+                onComplete: () => {
+                    attacker.sprite.x = this.map.tileToWorldX(attacker.x);
+                    attacker.sprite.y = this.map.tileToWorldY(attacker.y);
 
-                let damage = attacker.attack();
+                    attacker.moving = false;
+                    attacker.tweens -= 1;
 
-                target.hp -= damage;
-                this.log(
-                    `${attacker.name} does ${damage} damage to ${target.name}.`
-                );
+                    let attack = attacker.attack();
+                    let defence = target.defence();
+                    let damage = attack - defence;
 
-                if (target.hp <= 0) {
-                    this.removeEntity(target);
-                }
-            },
-            x: this.map.tileToWorldX(target.x),
-            y: this.map.tileToWorldY(target.y),
-            ease: 'Power2',
-            hold: 20,
-            duration: 80,
-            delay: attacker.tweens * 200,
-            yoyo: true,
-        });
+                    if (damage > 0) {
+                        target.hp -= damage;
+
+                        this.log(
+                            `${attacker.name} does ${damage} damage to ${target.name}.`
+                        );
+
+                        if (target.hp <= 0) {
+                            this.removeEntity(target);
+                        }
+                    }
+                },
+                x: this.map.tileToWorldX(target.x),
+                y: this.map.tileToWorldY(target.y),
+                ease: 'Power2',
+                hold: 20,
+                duration: 80,
+                delay: attacker.tweens * 200,
+                yoyo: true,
+            })
+        } else {                                         // ranged attack
+            const x = this.map.tileToWorldX(attacker.x);
+            const y = this.map.tileToWorldX(attacker.y);
+            const sprite = dungeon.scene.add.sprite(x, y, 'tiles', ranged);
+
+            sprite.setOrigin(0);
+
+            if (tint) {
+                sprite.tint = tint; 
+                sprite.tintFill = true;
+            }
+
+            this.scene.tweens.add({
+                targets: sprite,
+                onComplete: () => {
+                    attacker.moving = false;
+                    attacker.tweens -= 1;
+
+                    let attack = attacker.attack();
+                    let defence = target.defence();
+                    let damage = attack - defence;
+
+                    if (damage > 0) {
+                        target.hp -= damage;
+
+                        this.log(
+                            `${attacker.name} does ${damage} damage to ${target.name}.`
+                        );
+
+                        if (target.hp <= 0) {
+                            this.removeEntity(target);
+                        }
+                    }
+
+                    sprite.destroy();
+                },
+                x: this.map.tileToWorldX(target.x),
+                y: this.map.tileToWorldY(target.y),
+                ease: 'Power2',
+                hold: 20,
+                duration: 80,
+                delay: attacker.tweens * 200,
+            });
+        }
     },
 
     log: function(text) {

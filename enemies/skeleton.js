@@ -13,16 +13,20 @@ class Skeleton {
         this.y = y;
         this.name = 'Skeleton';
         this.type = 'enemy';
-        this.tile = 26; // sprite tile number for monster
-        this.hp = 1; // health points
-        this.ap = 1; // action points
-        this.mp = 1; // movement points
+        this.tile = 26;             // sprite tile number for monster
+        this.hp = 1;                // health points
+        this.ap = 1;                // action points
+        this.mp = 1;                // movement points
 
         dungeon.initializeEntity(this);
     }
 
     attack() {
         return Phaser.Math.Between(1, 3); // random number for dealing damage
+    }
+
+    defence() {
+        return 0;
     }
 
     refresh() {
@@ -83,7 +87,7 @@ class Skeleton {
 
         let lootIndex = Phaser.Math.Between(0, lootDrops.length - 1); // choosing random loot
 
-        if (lootDrops[lootIndex]) {              // if loot exists drop it from enemy
+        if (lootDrops[lootIndex]) {              // if loot exists drop it
             let item = lootDrops[lootIndex];
 
             tm.addEntity(new item(x, y));

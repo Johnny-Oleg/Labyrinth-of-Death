@@ -5,15 +5,17 @@ class HealthPotion extends GenericItem {
     constructor(x, y) {
         super(x, y);
 
-        this.name = 'Holy Potion';
+        this.name = 'Health Potion';
         this.tile = 656; // 761?
-        this.description = 'A potion that heals player for 10hp when equipped.';
+        this.description = 'A potion that cures between 3 and 5 hp when equipped.';
 
         dungeon.initializeEntity(this);
     }
 
     equip(itemNumber) {
-        dungeon.log('A warmth passes through your body and heals you for 10 Hp.');
+        const points = Phaser.Math.Between(3, 5);
+        
+        dungeon.log(`A warm feeling is felt when drinking ${this} as its restores ${points} hp.`);
         
         dungeon.player.hp += 10;
         dungeon.player.removeItem(itemNumber);

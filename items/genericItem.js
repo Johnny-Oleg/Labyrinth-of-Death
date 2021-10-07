@@ -16,6 +16,14 @@ class GenericItem {
         return 0;
     }
 
+    ranged() {
+        return 0;
+    }
+
+    protection() {
+        return 0;
+    }
+
     turn() {
 
     }
