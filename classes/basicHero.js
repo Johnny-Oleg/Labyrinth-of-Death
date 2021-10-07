@@ -107,7 +107,7 @@ class BasicHero {
 
     defence() {
         const items = this.equippedItems()
-        const combineDefence = (total, item) => total + item?.defence?.(); // ??! err?
+        const combineDefence = (total, item) => total + item.defence?.(); // ??! err?
 
         const defence = items.reduce(combineDefence, 0);
 
@@ -208,7 +208,7 @@ class BasicHero {
                 if (entity && entity.type === 'enemy' && this.ap > 0) {
                     const currentWeapon = this.currentWeapon();
 
-                    const rangedAttack = currentWeapon.range() > 0 ?
+                    const rangedAttack = currentWeapon.range?.() > 0 ? //?! err !
                         currentWeapon.attackTile || currentWeapon.tile : false;
 
                     const tint = currentWeapon.tint || false;       // color for ranged
