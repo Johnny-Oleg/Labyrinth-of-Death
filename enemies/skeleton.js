@@ -13,10 +13,10 @@ class Skeleton {
         this.y = y;
         this.name = 'Skeleton';
         this.type = 'enemy';
-        this.tile = 26;             // sprite tile number for monster
-        this.hp = 1;                // health points
-        this.ap = 1;                // action points
-        this.mp = 1;                // movement points
+        this.tile = 26; // sprite tile number for monster
+        this.hp = 1; // health points
+        this.ap = 1; // action points
+        this.mp = 1; // movement points
 
         dungeon.initializeEntity(this);
     }
@@ -27,11 +27,6 @@ class Skeleton {
 
     defence() {
         return 0;
-    }
-
-    refresh() {
-        this.mp = 1;
-        this.ap = 1;
     }
 
     turn() {
@@ -61,7 +56,12 @@ class Skeleton {
             this.ap -= 1;
         }
     }
-    
+
+    refresh() {
+        this.mp = 1;
+        this.ap = 1;
+    }
+
     over() {
         let isOver = this.mp == 0 && this.ap == 0 && !this.moving;
 
@@ -80,14 +80,15 @@ class Skeleton {
         this.UIsprite.setAlpha(0.2);
         this.UItext.setAlpha(0.2);
 
-        let x = this.x;           // possible loot drops
+        let x = this.x; // possible loot drops
         let y = this.y;
 
         let lootDrops = [false, false, Gem, LongSword, HolyPotion]; // array of loot
 
         let lootIndex = Phaser.Math.Between(0, lootDrops.length - 1); // choosing random loot
 
-        if (lootDrops[lootIndex]) {              // if loot exists drop it
+        if (lootDrops[lootIndex]) {
+            // if loot exists drop it
             let item = lootDrops[lootIndex];
 
             tm.addEntity(new item(x, y));
@@ -101,7 +102,10 @@ class Skeleton {
         let y = config.y;
 
         this.UIsprite = scene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
-        this.UItext = scene.add.text(x + 20, y, this.name, {font: '16px Arial', fill: '#cfc6b8'});
+        this.UItext = scene.add.text(x + 20, y, this.name, {
+            font: '16px Arial',
+            fill: '#cfc6b8',
+        });
 
         return 30;
     }

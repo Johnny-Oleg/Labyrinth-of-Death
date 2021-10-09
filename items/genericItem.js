@@ -1,5 +1,9 @@
-class GenericItem {
+import Taggable from '../taggable.js';
+
+class GenericItem extends Taggable {
     constructor(x, y) {
+        super(x, y);
+        
         this.name = 'Nameless Item';
         this.type = 'item';
         this.weapon = false;
@@ -24,21 +28,13 @@ class GenericItem {
         return 0;
     }
 
-    turn() {
+    turn() {}
 
-    }
+    equip() {}
 
-    equip() {
-    
-    }
+    unequip() {}
 
-    unequip() {
-    
-    }
-
-    refresh() {
-    
-    }
+    refresh() {}
 
     over() {
         return true;

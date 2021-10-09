@@ -1,6 +1,42 @@
 import tags from './tags.js';
 
 class Taggable {
+    addTagHandler(handlerName, handler) {
+        if (!this._tagHandlers) {
+            this._tagHandlers = {};
+        }
+
+        if (!this._tagHandlers[handlerName]) {
+            this._tagHandlers[handlerName] = [];
+        }
+
+        this._tagHandlers[handlerName].push(handler);
+    }
+
+    executeTag(handlerName, ret, ...args) {
+        if (this._tagHandlers && this._tagHandlers[handlerName]) {
+            this._tagHandlers[handlerName].forEach(handler => {
+                args = [ret, ...args];
+
+                ret = handler.apply(this, args);
+            })
+        }
+
+        return ret;
+    }
+
+    wrapFunction(handlerName) {  // allows to apply tags to unchanged entities and have it all work
+        if (!this._tagHandlers || !this._tagHandlers[handlerName]) {
+            let originalFunction = this[handlerName];
+
+            this[handlerName] = (...args) => {
+                let ret = originalFunction.apply(this, args);
+
+                return this.executeTag(handlerName, ret, ...args);
+            }
+        }
+    }
+
     addTag(template) {
         let tag = {};
 
@@ -24,6 +60,43 @@ class Taggable {
         } else {
             this._tags.push(name);
         }
+
+        return this; // returning this ensures that we can pass the resulting value into the functions that expect an entity such as the addEntity function of the turn manager module
+    }
+
+    removeTag(template) {
+        let tag = {};
+        Object.assign(tag, template);
+
+        let name = tag.name;
+
+        delete tag.name;
+        delete tag.initialize;
+
+        let keys = Object.keys(tag);
+
+        keys.forEach(handlerName => {
+            let functionAsString = tag[handlerName].toString();
+            let handlersAsString = this._tagHandlers[handlerName]
+                .map(handler => handler.toString());
+            
+            let index = handlersAsString
+                .findIndex(handlerAsString => handlerAsString == functionAsString);
+
+            this._tagHandlers[handlerName].splice(index, 1);
+        })
+
+        let tagPosition = this._tags.findIndex(tag => tag == name);
+
+        this._tags.splice(tagPosition, 1);
+    }
+
+    addTags(templateNames) {
+        templateNames.forEach(t => {
+            if (tags[t]) {
+                this.addTag(tags[t]);
+            }
+        })
 
         return this;
     }

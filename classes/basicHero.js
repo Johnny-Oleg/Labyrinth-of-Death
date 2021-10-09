@@ -1,10 +1,12 @@
 import dungeon from '../dungeon.js';
-import Sword from '../items/sword.js';
+import Taggable from '../taggable.js';
 
 const rn = Math.floor(Math.random() * 5);
 
-class BasicHero {
+class BasicHero extends Taggable {
     constructor(x, y) {
+        super(x, y);
+        
         this.x = x;
         this.y = y;
         this.name = 'Hero';
@@ -168,13 +170,13 @@ class BasicHero {
         let moved = false;
         let key = e.key;
 
-        if (!isNaN(Number(key))) {    // equip items
+        if (!isNaN(Number(key))) {       // equip items
            key == 0 && (key = 10);
 
             this.toggleItem(key - 1);
         }
 
-        if (e.keyCode == 32) {                // pass the turn press spacebar
+        if (e.keyCode == 32) {          // pass the turn press spacebar
             this.mp = 0;
             this.ap = 0;
         }
