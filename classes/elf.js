@@ -7,7 +7,7 @@ class Elf extends BasicHero {
         super(x, y);
 
         this.name = 'Elf';
-        this.tile = 74;         // 56
+        this.tile = 79;         // 56 (74)
         this.hp = 20;
         this.mp = 4;
         this.ap = 3;

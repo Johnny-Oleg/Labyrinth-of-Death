@@ -7,7 +7,7 @@ class Cleric extends BasicHero {
         super(x, y);
 
         this.name = 'Cleric';      //? change to paladin
-        this.tile = '79';          // 30
+        this.tile = '29';          // 30 (79)
         this.hp = 40;
         this.mp = 3;
         this.ap = 2;

@@ -29,7 +29,7 @@ const items = {
 
 export default items;
 
-export default function getRandomItem(x, y, modifierCount = 1, effectCount = 1) {
+export function getRandomItem(x, y, modifierCount = 1, effectCount = 1) {
     let key = Phaser.Utils.Array.GetRandom(Object.keys(items)); // random item
     let tags = getRandomTagsForItem(modifierCount, effectCount);       // random tag
 

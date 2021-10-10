@@ -18,10 +18,14 @@ class BasicHero extends Taggable {
         this.moving = false;
         this.items = [];         // array of items for player
 
+        dungeon.scene.input.keyboard.addCapture(['SPACE', 'UP', 'DOWN', 'LEFT', 'RIGHT']);
+
         dungeon.scene.input.keyboard.on('keyup', e => {
             if (!this.over()) {
                 this.processInput(e);
             }
+
+            e.stopPropagation();
         })
 
         dungeon.scene.input.on('pointerup', e => {
@@ -46,14 +50,14 @@ class BasicHero extends Taggable {
             if (item.active) {
                 dungeon.log(`${this.name} equips ${item.name}: ${item.description}`);
 
-                item.equip(itemNumber);
+                item.equip(itemNumber, this);
             }
 
-            if (item.class === 'sword') { // change player sprite regardless of weapon
+            if (item.class === 'sword') { //* change player sprite regardless of weapon
                 this.tile = 28;
             }
 
-            if (item.class === 'spear') { // change player sprite regardless of weapon
+            if (item.class === 'spear') { //* change player sprite regardless of weapon
                 this.tile = 29;
             }
         }
@@ -101,21 +105,20 @@ class BasicHero extends Taggable {
     attack() {
         const items = this.equippedItems();
 
-        const combineDamage = (total, item) => total + item.damage();
-        const damage = items.reduce(combineDamage, 1);
+        const combinedDamage = (total, item) => total + item.damage();
+        const damage = items.reduce(combinedDamage, 1);
 
         return damage;               // random number for dealing damage
     }
 
     defence() {
         const items = this.equippedItems()
-        const combineDefence = (total, item) => total + item.defence?.(); // ??! err?
+        const combinedDefence = (total, item) => total + item.defence?.(); // ??! err?
 
-        const defence = items.reduce(combineDefence, 0);
+        const defence = items.reduce(combinedDefence, 0);
 
         return defence;
     }
-
 
     turn() {
         if (this.hp > 6) {
@@ -151,11 +154,11 @@ class BasicHero extends Taggable {
             const rangedAttack = currentWeapon.range() > 0 ?
                 currentWeapon.attackTile || currentWeapon.tile : false;
 
-            const tint = currentWeapon.tint || false;       // color for ranged
+            const tint = currentWeapon.tint || false;       //? color for ranged
             const distance = dungeon.distanceBetweenEntities(this, entity);
 
             if (rangedAttack && distance <= currentWeapon.range()) {
-                dungeon.attackEntity(this, entity, rangedAttack, tint);
+                dungeon.attackEntity(this, entity, currentWeapon); //? rangedAttack, tint
 
                 this.ap -= 1;
             }
@@ -171,7 +174,7 @@ class BasicHero extends Taggable {
         let key = e.key;
 
         if (!isNaN(Number(key))) {       // equip items
-           key == 0 && (key = 10);
+            key == 0 && (key = 10);
 
             this.toggleItem(key - 1);
         }
@@ -181,7 +184,7 @@ class BasicHero extends Taggable {
             this.ap = 0;
         }
         
-        if (e.key == 'ArrowLeft') {
+        if (e.key == 'ArrowLeft') {     // movement decision
             newX -= 1;
             moved = true;
         }
@@ -213,9 +216,9 @@ class BasicHero extends Taggable {
                     const rangedAttack = currentWeapon.range?.() > 0 ? //?! err !
                         currentWeapon.attackTile || currentWeapon.tile : false;
 
-                    const tint = currentWeapon.tint || false;       // color for ranged
+                    const tint = currentWeapon.tint || false;       //? color for ranged
 
-                    dungeon.attackEntity(this, entity, rangedAttack, tint); // attacking if enemy is found
+                    dungeon.attackEntity(this, entity, currentWeapon); // attacking if enemy is found //? rangedAttack, tint
 
                     this.mp += 1;
                     this.ap -= 1;
@@ -228,7 +231,7 @@ class BasicHero extends Taggable {
                     dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
 
                     this.ap -= 1;
-            } else {
+                } else {
                     newX = oldX;
                     newY = oldY;
                 }
@@ -262,31 +265,31 @@ class BasicHero extends Taggable {
 
     createUI(config) {
         this.UIscene = config.scene;
+
         let x = config.x;
         let y = config.y;
-        let ah = 0; // accumulated height
+        let ah = 0;         // accumulated height
 
-        // character sprite and name
+                            // character sprite and name
         this.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
         this.UIheader = this.UIscene.add.text(x + 20, y, this.name, {
             font: '16px Arial',
             color: '#cfc6b8',
-        });
+        })
 
-        // character stats
-        this.UIstatsText = this.UIscene.add.text(
-            x + 20,
-            y + 20,
+                            // character stats
+        this.UIstatsText = this.UIscene.add.text(x + 20, y + 20,
             `Hp: ${this.hp}\nMp: ${this.mp}\nAp: ${this.ap}`, {
                 font: '12px Arial',
                 fill: '#cfc6b8',
             }
-        );
+        )
 
         ah += this.UIstatsText.height + this.UIsprite.height;
 
         let itemsPerRow = 5; // inventory screen
         let rows = 2;
+        
         this.UIitems = [];
 
         for (let row = 1; row <= rows; row++) {

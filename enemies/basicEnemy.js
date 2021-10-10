@@ -1,7 +1,7 @@
 import tm from '../turnManager.js';
 import dungeon from '../dungeon.js';
 import Taggable from '../taggable.js';
-// import { getRandomItem } from '../items.js';
+import { getRandomItem } from '../items.js';
 import GenericItem from '../items/genericItem.js';
 
 class BasicEnemy extends Taggable {
@@ -71,13 +71,27 @@ class BasicEnemy extends Taggable {
         return isOver;
     }
 
+    onDestroy() {
+        dungeon.log(`${this.name} was killed.`);
+
+        this.UIsprite.setAlpha(0.2);
+        this.UItext.setAlpha(0.2);
+
+        let x = this.x;
+        let y = this.y;
+        let item = getRandomItem(x, y, 1, 1);
+
+        tm.addEntity(item);
+        dungeon.log(`${this.name} drops ${item.name}.`);
+    }
+
     createUI(config) {
         let scene = config.scene;
         let x = config.x;
         let y = config.y;
 
         this.UIsprite = scene.add.sprite(x, y, 'tiles', this.tile)
-            .setOrigin(0).setInteractive({ useHandCursor: true });
+            .setOrigin(0).setInteractive({useHandCursor: true});
 
         if (this.tint) {
             this.UIsprite.tint = this.tint;

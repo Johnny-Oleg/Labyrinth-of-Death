@@ -9,7 +9,7 @@ class Troll extends BasicEnemy {
         this.y = y;
         this.name = 'Troll';
         this.type = 'enemy';
-        this.tile = 286;
+        this.tile = 122;        // 286
         this.hp = 8;
         this.mp = 2;
         this.ap = 1;

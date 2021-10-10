@@ -9,7 +9,7 @@ class Bat extends BasicEnemy {
         this.y = y;
         this.name = 'Bat';
         this.type = 'enemy';
-        this.tile = 282;
+        this.tile = 410;        // 282
         this.hp = 2;
         this.mp = 5;
         this.ap = 1;

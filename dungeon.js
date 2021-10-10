@@ -1,5 +1,4 @@
 // import PF from 'pathfinding';
-
 import tm from './turnManager.js';
 import level from './level.js';
 
@@ -15,20 +14,20 @@ let dungeon = {
         this.scene = scene;
         this.level = level;
 
-        let levelWithTiles = level.map(row =>
+        this.levelWithTiles = level.map(row =>
             row.map(tile =>
                 tile == 1 ? this.sprites.wall : this.sprites.floor
             )
         )
 
         const config = {
-            data: levelWithTiles,
+            data: this.levelWithTiles,
             tileWidth: this.tileSize,
             tileHeight: this.tileSize,
         }
 
         const map = scene.make.tilemap(config);
-        const tileset = map.addTilesetImage(
+        const tileset = map.addTilesetImage( // key: texture key
             'tiles',
             'tiles',
             this.tileSize,
@@ -54,6 +53,22 @@ let dungeon = {
         let tileAtDestination = dungeon.map.getTileAt(x, y); // check level
 
         return tileAtDestination.index !== dungeon.sprites.wall;
+    },
+
+    randomWalkableTile: function () {       // finds player a random walkable tile
+        let x = Phaser.Math.Between(0, dungeon.level[0].length - 1);
+        let y = Phaser.Math.Between(0, dungeon.level.length - 1);
+        let tileAtDestination = dungeon.map.getTileAt(x, y);
+
+        while (typeof tileAtDestination == 'undefined' || 
+            tileAtDestination.index == dungeon.sprites.wall) {
+                x = Phaser.Math.Between(0, dungeon.level[0].length - 1);
+                y = Phaser.Math.Between(0, dungeon.level.length - 1);
+
+                tileAtDestination = dungeon.map.getTileAt(x, y);
+            }
+            
+            return {x, y}; // the function works by picking a random location and then checking if it is a wall or not. If it is, then it loops picking a different location. The resulting value is an object with coordinates.
     },
 
     entityAtTile: function(x, y) {
@@ -85,8 +100,18 @@ let dungeon = {
         }
     },
 
+    describeEntity: function(entity) {
+        if (entity) {
+            let name = entity.name;
+            let description = entity.description || '';
+            let tags = entity._tags ? entity._tags.map(tag => `#${tag}`).join(', ') : '';
+
+            dungeon.log(`${name}\n${tags}\n${description}`);
+        }
+    },
+
     removeEntity: function(entity) {
-        tm.entities.delete(entity);
+        entity.sprite.destroy();        //? tm.entities.delete(entity);
         entity.sprite.destroy();
 
         delete entity.sprite;
@@ -102,14 +127,12 @@ let dungeon = {
 
     moveEntityTo: function(entity, x, y) {
         entity.moving = true;
+        entity.x = x;
+        entity.y = y;
 
         this.scene.tweens.add({
             targets: entity.sprite,
-            onComplete: () => {
-                entity.moving = false;
-                entity.x = x;
-                entity.y = y;
-            },
+            onComplete: () => entity.moving = false,
             x: this.map.tileToWorldX(x),
             y: this.map.tileToWorldY(y),
             ease: 'Power2',
@@ -119,10 +142,7 @@ let dungeon = {
 
     distanceBetweenEntities: function(e1, e2) {
         let grid = new PF.Grid(dungeon.level);
-        let finder = new PF.AStarFinder({
-            allowDiagonal: true,
-        })
-
+        let finder = new PF.AStarFinder({allowDiagonal: true});
         let path = finder.findPath(e1.x, e1.y, e2.x, e2.y, grid);
 
         if (path.length >= 2) {
@@ -132,10 +152,13 @@ let dungeon = {
         }
     },
 
-    attackEntity: function(attacker, target, ranged = false, tint = false) {
+    attackEntity: function(attacker, target, weapon) {
         attacker.moving = true;
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;
+
+        let ranged = weapon.range() ? weapon.attackTile : false;    //? err?
+        let tint = weapon.range() && weapon.tint ? weapon.tint : false;
 
         if (!ranged) {                          // close melee attack
             this.scene.tweens.add({
@@ -155,8 +178,10 @@ let dungeon = {
                         target.hp -= damage;
 
                         this.log(
-                            `${attacker.name} does ${damage} damage to ${target.name}.`
+                            `${attacker.name} does ${damage} damage to ${target.name} with ${weapon.name}.`
                         );
+
+                        weapon.executeTag('damagedEntity', target);
 
                         if (target.hp <= 0) {
                             this.removeEntity(target);
@@ -174,9 +199,7 @@ let dungeon = {
         } else {                                         // ranged attack
             const x = this.map.tileToWorldX(attacker.x);
             const y = this.map.tileToWorldX(attacker.y);
-            const sprite = dungeon.scene.add.sprite(x, y, 'tiles', ranged);
-
-            sprite.setOrigin(0);
+            const sprite = dungeon.scene.add.sprite(x, y, 'tiles', ranged).setOrigin(0);
 
             if (tint) {
                 sprite.tint = tint; 
@@ -197,8 +220,10 @@ let dungeon = {
                         target.hp -= damage;
 
                         this.log(
-                            `${attacker.name} does ${damage} damage to ${target.name}.`
+                            `${attacker.name} does ${damage} damage to ${target.name} with ${weapon.name}.`
                         );
+
+                        weapon.executeTag('damagedEntity', target);
 
                         if (target.hp <= 0) {
                             this.removeEntity(target);
