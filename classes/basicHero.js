@@ -13,8 +13,8 @@ class BasicHero extends Taggable {
         this.type = 'character';
         this.tile = 30;          // sprite tile number for main character (28 sword | 29 spear)
         this.hp = 15;            // health points
-        this.ap = 1;             // action points
         this.mp = 1;             // movement points
+        this.ap = 1;             // action points
         this.moving = false;
         this.items = [];         // array of items for player
 
@@ -316,7 +316,14 @@ class BasicHero extends Taggable {
                 let x = this.UIitems[i].x + 10;
                 let y = this.UIitems[i].y + 10;
 
-                item.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', item.tile);
+                item.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', item.tile)
+                    .setInteractive({useHandCursor: true});
+
+                item.UIsprite.on('pointerup', pointer => {
+                    if (pointer.leftButtonReleased()) {
+                        dungeon.describeEntity(item);
+                    }
+                })
 
                 if (item.tint) {                        // check if sprite has a color prop
                     item.UIsprite.tint = item.tint;
@@ -332,11 +339,12 @@ class BasicHero extends Taggable {
                 this.UIitems[i].setStrokeStyle(1, 0xffffff);
             }
 
-            if (this.UIstatsText) {
-                this.UIstatsText.setText(
-                    `Hp: ${this.hp}\nMp: ${this.mp}\nAp: ${this.ap}`
-                )
-            }
+        }
+
+        if (this.UIstatsText) {
+            this.UIstatsText.setText(
+                `Hp: ${this.hp}\nMp: ${this.mp}\nAp: ${this.ap}`
+            )
         }
     }
 }
