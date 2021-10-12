@@ -157,8 +157,8 @@ let dungeon = {
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;
 
-        let ranged = weapon.range() ? weapon.attackTile : false;    //? err?
-        let tint = weapon.range() && weapon.tint ? weapon.tint : false;
+        let ranged = weapon.range?.() ? weapon.attackTile : false;    //? err?
+        let tint = weapon.range?.() && weapon.tint ? weapon.tint : false; //? err?
 
         if (!ranged) {                          // close melee attack
             this.scene.tweens.add({

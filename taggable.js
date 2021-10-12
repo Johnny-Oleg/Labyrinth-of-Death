@@ -66,6 +66,7 @@ class Taggable {
 
     removeTag(template) {
         let tag = {};
+        
         Object.assign(tag, template);
 
         let name = tag.name;

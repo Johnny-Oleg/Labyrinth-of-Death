@@ -8,7 +8,7 @@ class Sword extends GenericItem {
         this.name = 'a Sword';
         this.tile = 320;          // 994?
         this.weapon = true;
-        this.class = 'sword'; // optional weapon type for player sprite change
+        // this.class = 'sword'; // optional weapon type for player sprite change
         this.description = 'A basic sword, dealing between 1 and 5 damage';
 
         dungeon.initializeEntity(this);

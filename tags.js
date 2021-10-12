@@ -9,6 +9,7 @@ import iron from './tags/iron.js';
 import patrolling from './tags/patrolling.js';
 import poison from './tags/poison.js';
 import royal from './tags/royal.js';
+import silver from './tags/silver.js';
 
 let tags = {
     aggro,
@@ -22,12 +23,13 @@ let tags = {
     patrolling,
     poison,
     royal,
+    silver,
 }
 
-export const materials = ['golden', 'silver', 'iron']; // materials are tags that modify the nature of the item
-export const enemyModifiers = ['aggro', 'fast', 'royal']; // enemy modifiers are bonuses that are applied to a monster
+export const materials = [false, 'iron', 'iron', false, 'silver', false, 'golden']; // materials are tags that modify the nature of the item
+export const enemyModifiers = ['aggro', 'fast', false, false, false, false, 'royal']; // enemy modifiers are bonuses that are applied to a monster
 export const behaviors = ['goingSomewhere', 'hunter', 'patrolling']; // behaviors are only applicable to enemies; they will provide the turn function implementation
-export const effects = ['poison', 'burning', 'cursed']; // Effects are tags that cause a side effect at every turn
+export const effects = [false, 'poison', false, 'burning', false, 'cursed']; // Effects are tags that cause a side effect at every turn
 export function getRandomTagsForItem(modifierCount = 1, effectCount = 0) {
     let res = new Set(); // a set is used so that the same tag is not applied more than once
 

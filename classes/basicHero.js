@@ -53,13 +53,13 @@ class BasicHero extends Taggable {
                 item.equip(itemNumber, this);
             }
 
-            if (item.class === 'sword') { //* change player sprite regardless of weapon
-                this.tile = 28;
-            }
+            // if (item.class === 'sword') { //* change player sprite regardless of weapon
+            //     this.tile = 28;
+            // }
 
-            if (item.class === 'spear') { //* change player sprite regardless of weapon
-                this.tile = 29;
-            }
+            // if (item.class === 'spear') { //* change player sprite regardless of weapon
+            //     this.tile = 29;
+            // }
         }
     }
 

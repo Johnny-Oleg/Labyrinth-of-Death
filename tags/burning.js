@@ -6,8 +6,8 @@ const burning = {
         this._burnDamage = damage;
         this._howManyTurns = howManyTurns;
 
-        if (this.type === 'item') {
-            this.tint = 0x002300;
+        if (this.type === 'item' && this.weapon === true) {
+            this.tint = 0xdd0000;       // 0x002300
 
             if (this.sprite) {
                 this.sprite.tint = this.tint;

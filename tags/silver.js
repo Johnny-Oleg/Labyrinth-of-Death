@@ -4,10 +4,10 @@ const silver = {
     name: 'Silver',
     initialize: function() {
         this.name = `Silver ${this.name}`;
-        this.tint = 0xccbc00;
+        this.tint = 0xcfc6b8;              // 0xccbc00
 
         if (this.sprite) {
-            this.sprite.tint = this.tint;this.sprite.tintFill = true
+            this.sprite.tint = this.tint;
             this.sprite.tintFill = true;
         }
 

@@ -7,7 +7,7 @@ const cursed = {
         this._howManyTurns = howManyTurns;
 
         if (this.type === 'item') {
-            this.tint = 0x002300;
+            // this.tint = 0x002300;       //* sprite color conflict
 
             if (this.sprite) {
                 this.sprite.tint = this.tint;
