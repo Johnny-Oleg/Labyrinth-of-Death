@@ -16,6 +16,20 @@ class DNode {
             this.right.forEachArea(f);
         }
     }
+
+    forEachLeaf(f) {
+        if (!this.left && !this.right) {
+            f(this.area);
+        }
+
+        if (this.left) {
+            this.left.forEachLeaf(f);
+        }
+
+        if (this.right) {
+            this.right.forEachLeaf(f);
+        }
+    }
 }
 
 class DArea {               // dungeon area: each DNode will contain a DArea
@@ -28,11 +42,24 @@ class DArea {               // dungeon area: each DNode will contain a DArea
     }
 }
 
+class DRoom {   // use random number generation to decide the position and dimensions of the room
+    constructor(area) { // taking care to make them fit inside the given area
+        this.x = Math.floor(area.x + (Phaser.Math.Between(1, area.w) / 3));
+        this.y = Math.floor(area.y + (Phaser.Math.Between(1, area.h) / 3));
+
+        this.w = area.w - (this.x - area.x);
+        this.h = area.h - (this.y - area.y);
+
+        this.w -= Math.floor(Phaser.Math.Between(1, this.w / 3));
+        this.h -= Math.floor(Phaser.Math.Between(1, this.h / 3));
+    }
+}
+
 function splitArea(area) {
     let x1, y1, w1, h1 = 0; // x1, y1, w1, and h1 represent one area
     let x2, y2, w2, h2 = 0; // and the x2, y2, w2, and h2 the other area
 
-    if (Phaser.Math.Between(0, 1) === 0) {  // vertical
+    if (Phaser.Math.Between(0, 1) == 0) {  // vertical
         let divider = Phaser.Math.Between(1, area.w);
 
         x1 = area.x;
@@ -75,12 +102,14 @@ function splitArea(area) {
 function makeTree(area, iterations) { // splits the given area, places each side of the 
     let root = new DNode(area);       // split into the left and right children of the node
 
-    if (!iterations !== 0) {
+    if (iterations != 0) {
         let [a1, a2] = splitArea(root.area);
 
         root.left = makeTree(a1, iterations - 1);
         root.right = makeTree(a2, iterations - 1);
     }
+
+    return root;
 }
 
 export default class BSPDungeon {
@@ -89,6 +118,8 @@ export default class BSPDungeon {
         this.tree = makeTree(this.rootArea, iterations);
 
         this.initializeLevelData();
+        this.makeRooms();
+        this.makeCorridors();
     }
 
     initializeLevelData() {     // makes sure we have a valid level data array 
@@ -98,11 +129,66 @@ export default class BSPDungeon {
             lvl[y] = lvl[y] || [];
 
             for (let x = 0; x <= this.rootArea.w; x++) {
-                lvl[y][x] = 0; // empty
+                lvl[y][x] = 1; //* 0 - empty
             }
         }
 
         this.levelData = lvl;
+    }
+
+    fillRect(x, y, w, h, tile) { // carves rectangles in the shape of our rooms
+        for (let y1 = y; y1 < y + h; y1++) {
+            for (let x1 = x; x1 < x + w; x1++) {
+                this.levelData[y1][x1] = tile;
+            }
+        }
+    }
+
+    line(x1, y1, x2, y2, tile) {            // makes a line and not a square
+        for (let y = y1; y <= y2; y++) {
+            for (let x = x1; x <= x2; x++) {
+                this.levelData[y][x] = tile;
+            }
+        }
+    }
+
+    makeRooms() {   // iterates over the leaves in the tree, making a room in each of them
+        const makeRoom = area => {
+            area.room = new DRoom(area);
+
+            this.fillRect(area.room.x, area.room.y, area.room.w, area.room.h, 0);
+        }
+
+        this.tree.forEachLeaf(makeRoom);
+    }
+
+    getRooms() {
+        let rooms = [];
+
+        this.tree.forEachLeaf(area => {
+            rooms.push(area.room);
+        })
+
+        return rooms;   // returns an array that is easy to iterate in the world scene
+    }
+
+    makeCorridors() {   // makes lines between the various sibling areas
+        const makePath = node => {
+            if (node.left && node.right) {
+                let x1 = Math.floor(node.left.area.x + (node.left.area.w / 2));
+                let y1 = Math.floor(node.left.area.y + (node.left.area.h / 2));
+
+                let x2 = Math.floor(node.right.area.x + (node.right.area.w / 2));
+                let y2 = Math.floor(node.right.area.y + (node.right.area.h / 2));
+
+                this.line(x1, y1, x2, y2, 0);
+
+                makePath(node.left);
+                makePath(node.right);
+            }
+        }
+
+        makePath(this.tree);
     }
 
     toLevelData() {

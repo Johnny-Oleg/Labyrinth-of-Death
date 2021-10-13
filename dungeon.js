@@ -1,24 +1,24 @@
 // import PF from 'pathfinding';
 import tm from './turnManager.js';
-import level from './level.js';
+// import level from './level.js';
 
 let dungeon = {
     msgs: [],        // array for messages
     sprites: {
-        floor: 1,    // 0 default
-        wall: 867,   // 554 default
+        floor: 0,    // 0 default (1)
+        wall: 554,   // 554 default (867)
     },
     tileSize: 16,    // 16 default
 
-    initialize: function(scene) {
+    initialize: function(scene, level) {
         this.scene = scene;
         this.level = level;
 
-        this.levelWithTiles = level.map(row =>
-            row.map(tile =>
-                tile == 1 ? this.sprites.wall : this.sprites.floor
-            )
-        )
+        this.levelWithTiles = level.map(row => { // return required!
+            return row.map(tile => {
+                return tile == 1 ? this.sprites.wall : this.sprites.floor;
+            })
+        })
 
         const config = {
             data: this.levelWithTiles,
@@ -71,6 +71,21 @@ let dungeon = {
             return {x, y}; // the function works by picking a random location and then checking if it is a wall or not. If it is, then it loops picking a different location. The resulting value is an object with coordinates.
     },
 
+    randomWalkableTileInRoom: function(x, y, w, h) { // loops over rooms and decides what to do for each room
+        let rx = Phaser.Math.Between(x, x + w - 1);
+        let ry = Phaser.Math.Between(y, y + h - 1);
+        let tileAtDestination = dungeon.map.getTileAt(rx, ry);
+
+        while (typeof tileAtDestination == 'undefined' || tileAtDestination.index == dungeon.sprites.wall) {
+            rx = Phaser.Math.Between(x, x + w - 1);
+            ry = Phaser.Math.Between(y, y + h - 1);
+
+            tileAtDestination = dungeon.map.getTileAt(rx, ry);
+        }
+
+        return {x: rx, y: ry};      // Phaser's weightedPick?
+    },
+
     entityAtTile: function(x, y) {
         let allEntities = [...tm.entities];
 
@@ -116,7 +131,7 @@ let dungeon = {
 
         delete entity.sprite;
 
-        entity.onDestroy();
+        entity.onDestroy?.();           //! err? for items
     },
 
     itemPicked: function(entity) {
