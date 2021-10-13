@@ -1,5 +1,6 @@
 import tm from './turnManager.js';
 import dungeon from './dungeon.js';
+import BSPDungeon from '.bspdungeon.js';
 import classes from './classes.js';
 import { getRandomItem } from './items.js';
 import { getRandomEnemy } from './enemies.js';
