@@ -40,9 +40,7 @@ class BasicHero extends Taggable {
 
         if (item) {
             if (item.weapon) {
-                this.items.forEach(item => {
-                    item.active = item.weapon ? false : item.active;
-                })
+                this.items.forEach(item => item.active = item.weapon ? false : item.active);
             }
 
             item.active = !item.active;
@@ -63,7 +61,7 @@ class BasicHero extends Taggable {
         }
     }
 
-    removeItem(itemNumber) {
+    removeItem(itemNumber) {                 //? removing useless item by clicking func?
         const item = this.items[itemNumber];
 
         if (item) {
@@ -106,14 +104,14 @@ class BasicHero extends Taggable {
         const items = this.equippedItems();
 
         const combinedDamage = (total, item) => total + item.damage();
-        const damage = items.reduce(combinedDamage, 1);
+        const damage = items.reduce(combinedDamage, 0);
 
         return damage;               // random number for dealing damage
     }
 
     defence() {
         const items = this.equippedItems()
-        const combinedDefence = (total, item) => total + item.defence?.(); // ??! err?
+        const combinedDefence = (total, item) => total + item.defence?.(); //! err? quick bug fix
 
         const defence = items.reduce(combinedDefence, 0);
 
@@ -148,7 +146,7 @@ class BasicHero extends Taggable {
 
         let entity = dungeon.entityAtTile(x, y);
 
-        if (entity && entity.type == 'enemy' && this.ap > 0) {
+        if (entity && entity.type == 'enemy' && this.ap > 0) {  //? && entity.type !== 'item'
             const currentWeapon = this.currentWeapon();
 
             const rangedAttack = currentWeapon.range() > 0 ?
@@ -210,10 +208,10 @@ class BasicHero extends Taggable {
             if (!dungeon.isWalkableTile(newX, newY)) { // check if entity at destination is an enemy
                 let entity = dungeon.entityAtTile(newX, newY);
 
-                if (entity && entity.type === 'enemy' && this.ap > 0) {
+                if (entity && entity.type === 'enemy' && this.ap > 0) { //* && entity.type !== 'item'
                     const currentWeapon = this.currentWeapon();
 
-                    const rangedAttack = currentWeapon.range?.() > 0 ? //?! err !
+                    const rangedAttack = currentWeapon.range?.() > 0 ? //! err? quick bug fix
                         currentWeapon.attackTile || currentWeapon.tile : false;
 
                     const tint = currentWeapon.tint || false;       //? color for ranged
@@ -224,12 +222,13 @@ class BasicHero extends Taggable {
                     this.ap -= 1;
                 }
                                                         // check if entity at destination is an item
-                if (entity && entity.type === 'item' && this.ap > 0) {
-                    this.items.push(entity);  // picking items
+                if (entity && entity.type === 'item' && this.ap > 0) { //Todo
+                    const maxItems = this.items.length < 10;
+                    maxItems && this.items.push(entity);  // picking items
 
-                    dungeon.itemPicked(entity);
-                    dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
-
+                    maxItems && dungeon.itemPicked(entity);
+                    maxItems && dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
+                    
                     this.ap -= 1;
                 } else {
                     newX = oldX;
@@ -258,7 +257,7 @@ class BasicHero extends Taggable {
     }
 
     onDestroy() {
-        alert("You died...");
+        alert('You died...');
         
         location.reload();
     }

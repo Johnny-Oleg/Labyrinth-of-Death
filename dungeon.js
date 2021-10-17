@@ -33,7 +33,7 @@ let dungeon = {
             this.tileSize,
             this.tileSize,
             0,
-            1
+            1   // 1
         )
 
         this.map = map.createLayer(0, tileset, 0, 0);
@@ -126,12 +126,12 @@ let dungeon = {
     },
 
     removeEntity: function(entity) {
-        entity.sprite.destroy();        //? tm.entities.delete(entity);
-        entity.sprite.destroy();
+        entity?.sprite?.destroy?.();        //! err? quick bux fix
 
         delete entity.sprite;
 
-        entity.onDestroy?.();           //! err? for items
+        entity.onDestroy?.();           //! err? for items  quick bug fix
+        tm.entities.delete(entity);
     },
 
     itemPicked: function(entity) {
@@ -180,7 +180,7 @@ let dungeon = {
                 targets: attacker.sprite,
                 onComplete: () => {
                     attacker.sprite.x = this.map.tileToWorldX(attacker.x);
-                    attacker.sprite.y = this.map.tileToWorldY(attacker.y);
+                    attacker.sprite.y = this.map.tileToWorldX(attacker.y); //? X
 
                     attacker.moving = false;
                     attacker.tweens -= 1;
@@ -213,7 +213,7 @@ let dungeon = {
             })
         } else {                                         // ranged attack
             const x = this.map.tileToWorldX(attacker.x);
-            const y = this.map.tileToWorldX(attacker.y);
+            const y = this.map.tileToWorldX(attacker.y); //? X
             const sprite = dungeon.scene.add.sprite(x, y, 'tiles', ranged).setOrigin(0);
 
             if (tint) {
@@ -230,6 +230,8 @@ let dungeon = {
                     let attack = attacker.attack();
                     let defence = target.defence();
                     let damage = attack - defence;
+
+                    this.log(`${target.name} defends with ${defence}.`); // optional
 
                     if (damage > 0) {
                         target.hp -= damage;
