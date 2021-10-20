@@ -10,7 +10,7 @@ const config = {
     backgroundColor: '#472d3c', // #472d3c
     parent: 'game',
     pixelArt: true,
-    zoom: 1.15,                    // camera zoom: min 1 to... max
+    zoom: 1.14,                    // camera zoom: min 1 to... max
     scene: [world, ui],
     physics: {
         default: 'arcade',

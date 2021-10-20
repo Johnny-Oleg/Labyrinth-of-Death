@@ -17,9 +17,11 @@ class BasicHero extends Taggable {
         this.ap = 1;             // action points
         this.moving = false;
         this.items = [];         // array of items for player
+    }
 
+    setEvents() {
         dungeon.scene.input.keyboard.addCapture(['SPACE', 'UP', 'DOWN', 'LEFT', 'RIGHT']);
-
+        
         dungeon.scene.input.keyboard.on('keyup', e => {
             if (!this.over()) {
                 this.processInput(e);
@@ -146,13 +148,13 @@ class BasicHero extends Taggable {
 
         let entity = dungeon.entityAtTile(x, y);
 
-        if (entity && entity.type == 'enemy' && this.ap > 0) {  //? && entity.type !== 'item'
+        if (entity && entity.type == 'enemy' && entity.type !== 'item' && this.ap > 0) {  //* ? 
             const currentWeapon = this.currentWeapon();
 
-            const rangedAttack = currentWeapon.range() > 0 ?
+            const rangedAttack = currentWeapon.range() > 0 ?    //! err?
                 currentWeapon.attackTile || currentWeapon.tile : false;
 
-            const tint = currentWeapon.tint || false;       //? color for ranged
+            // const tint = currentWeapon.tint || false;       //? color for ranged
             const distance = dungeon.distanceBetweenEntities(this, entity);
 
             if (rangedAttack && distance <= currentWeapon.range()) {
@@ -202,19 +204,31 @@ class BasicHero extends Taggable {
             moved = true;
         }
 
+        if (e.key == 'd') {        // go down the dungeon
+            dungeon.goDown();
+
+            return 
+        }
+
+        if (e.key == 'u') {        // go up the dungeon
+            dungeon.goUp();
+
+            return 
+        }
+
         if (moved) {               // execute movement
             this.mp -= 1;
 
             if (!dungeon.isWalkableTile(newX, newY)) { // check if entity at destination is an enemy
                 let entity = dungeon.entityAtTile(newX, newY);
 
-                if (entity && entity.type === 'enemy' && this.ap > 0) { //* && entity.type !== 'item'
+                if (entity && entity.type === 'enemy' && entity.type !== 'item' && this.ap > 0) { //* ?
                     const currentWeapon = this.currentWeapon();
 
-                    const rangedAttack = currentWeapon.range?.() > 0 ? //! err? quick bug fix
-                        currentWeapon.attackTile || currentWeapon.tile : false;
+                    // const rangedAttack = currentWeapon.range?.() > 0 ? //! err? quick bug fix
+                    //     currentWeapon.attackTile || currentWeapon.tile : false;
 
-                    const tint = currentWeapon.tint || false;       //? color for ranged
+                    // const tint = currentWeapon.tint || false;       //? color for ranged
 
                     dungeon.attackEntity(this, entity, currentWeapon); // attacking if enemy is found //? rangedAttack, tint
 
@@ -222,17 +236,26 @@ class BasicHero extends Taggable {
                     this.ap -= 1;
                 }
                                                         // check if entity at destination is an item
-                if (entity && entity.type === 'item' && this.ap > 0) { //Todo
-                    const maxItems = this.items.length < 10;
-                    maxItems && this.items.push(entity);  // picking items
+                if (entity && entity.type === 'item' && this.ap > 0) {
+                    if (this.items.length < 10) {       // items arr fullness check
+                        this.items.push(entity);        // picking items
+    
+                        dungeon.itemPicked(entity);
+                        dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
+                    }
 
-                    maxItems && dungeon.itemPicked(entity);
-                    maxItems && dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
-                    
                     this.ap -= 1;
                 } else {
                     newX = oldX;
                     newY = oldY;
+                }
+
+                if (entity && entity.type === 'stairs') { // check if entity at destination is a stair
+                    if (entity.direction == "down") {
+                        dungeon.goDown();
+                    } else {
+                        dungeon.goUp();
+                    }
                 }
             }
 
@@ -348,6 +371,21 @@ class BasicHero extends Taggable {
                 `Hp: ${this.hp}\nMp: ${this.mp}\nAp: ${this.ap}`
             )
         }
+    }
+
+    cleanup() {
+        delete this.UIheader;
+        delete this.UIstatsText;
+        delete this.UIsprite;
+        delete this.UIitems;
+        delete this.UIscene;
+        delete this.sprite;
+
+        this.items.forEach(item => {
+            if (item.UIsprite) {
+                delete item.UIsprite;
+            }
+        })
     }
 }
 

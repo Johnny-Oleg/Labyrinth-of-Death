@@ -38,6 +38,10 @@ class BasicEnemy extends Taggable {
         }
     }
 
+    setEvents() {
+    
+    }
+
     attack() {
         return Phaser.Math.Between(this.damage.min, this.damage.max);
     }

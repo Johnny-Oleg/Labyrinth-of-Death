@@ -17,7 +17,7 @@ const cursed = {
     },
 
     damagedEntity(entity) {
-        entity.addTag(burning);
+        entity.addTag(cursed);
 
         return entity;
     },

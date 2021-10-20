@@ -22,6 +22,19 @@ const tm = {                // <- turn manager
         }
     },
     over: () => [...tm.entities].every(entity => entity.over()),
+    cleanup: () => {
+        tm.entities.forEach(entity => {
+            if (entity.sprite) {
+                entity.sprite.destroy();
+            }
+            
+            if (entity.UIsprite) {
+                entity.UIsprite.destroy();
+            }
+        })
+
+        tm.removeAllEntities();
+    }
 };
 
 export default tm;

@@ -6,9 +6,14 @@ const ui = {
     active: true,
 
     create: function () {
+        console.log('create ui');
         this.createdUI = false;
 
-        this.scene.get('world-scene').events.on('createUI', () => {
+        this.scene.get('world-scene').events.once('dungeon-changed', () => {
+            this.scene.restart();
+        });
+
+        this.scene.get('world-scene').events.once('createUI', () => {
             let iterator = tm.entities.values();
             
             let x = 80 * 16 - 190; // ui column horizontal position

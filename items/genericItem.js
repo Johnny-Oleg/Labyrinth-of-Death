@@ -16,6 +16,10 @@ class GenericItem extends Taggable {
         }
     }
 
+    setEvents() {
+    
+    }
+
     damage() {
         return 0;
     }
@@ -28,13 +32,21 @@ class GenericItem extends Taggable {
         return 0;
     }
 
-    turn() {}
+    turn() {
 
-    equip() {}
+    }
 
-    unequip() {}
+    equip() {
 
-    refresh() {}
+    }
+
+    unequip() {
+
+    }
+
+    refresh() {
+        
+    }
 
     over() {
         return true;

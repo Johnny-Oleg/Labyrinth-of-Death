@@ -1,7 +1,7 @@
 import tm from './turnManager.js';
 import dungeon from './dungeon.js';
-import BSPDungeon from './bspdungeon.js';
 import classes from './classes.js';
+import Stairs from './items/stairs.js';
 import { getRandomItem } from './items.js';
 import { getRandomEnemy } from './enemies.js';
 
@@ -18,13 +18,27 @@ const world = {
     },
 
     create: function () {
-        let dg = new BSPDungeon(80, 50, 4); // instance with an 80x50 grid
-        let level = dg.toLevelData(); // and tell the algorithm to iterate over it four times
-        
-        dungeon.initialize(this, level);
+        this.events.once('dungeon-changed', () => {
+            this.scene.restart();
+        })
 
-        let rooms = dg.getRooms();          // get rooms
-        let node = dg.tree.left;
+        dungeon.initialize(this);
+
+        //let dg = new BSPDungeon(80, 50, 4); // instance with an 80x50 grid
+       // let level = dg.toLevelData(); // and tell the algorithm to iterate over it four times
+        
+        let rooms = dungeon.rooms;          // get rooms
+        let stairs = dungeon.stairs;        // add stairs
+
+        if (stairs.down) {
+            tm.addEntity(new Stairs(stairs.down.x, stairs.down.y, 'down'));
+        }
+
+        if (stairs.up) {
+            tm.addEntity(new Stairs(stairs.up.x, stairs.up.y, 'up'));
+        }
+
+        let node = dungeon.tree.left;
 
         while (node.left !== false) {       // places player in the room at the left-most tree node
             node = node.left;
@@ -33,12 +47,17 @@ const world = {
         let r = node.area.room;
         let p = dungeon.randomWalkableTileInRoom(r.x, r.y, r.w, r.h);
 
-       // dungeon.player = new classes.Cleric(10, 10);    // load game entities
-        //dungeon.player = new classes.Dwarf(13, 13);
-        // dungeon.player = new classes.Elf(14, 18);
-       // dungeon.player = new classes.Warrior(15, 15); 
-       // dungeon.player = new classes.Wizard(12, 16); 
-        dungeon.player = new classes.Elf(p.x, p.y);
+       // load game entities
+        
+       if (!dungeon.player) {
+           dungeon.player = new classes.Elf(p.x, p.y);
+       } else {
+           dungeon.player.x = p.x;
+           dungeon.player.y = p.y;
+           dungeon.player.refresh();
+
+           dungeon.initializeEntity(dungeon.player);
+       }
 
         tm.addEntity(dungeon.player);                 // adding player character to level
 
@@ -91,12 +110,12 @@ const world = {
 
         let camera = this.cameras.main; // set camera, causes game viewport to shrink on the right side freeing space for the UI scene
         camera.setViewport(0, 0, camera.worldView.width - 200, camera.worldView.height);
-        camera.setBounds(0, 0, camera.worldView.width, camera.worldView.height);
+        camera.setBounds(0, 0, this.game.config.width, this.game.config.height);
         camera.startFollow(dungeon.player.sprite);
 
         this.events.emit('createUI');   // trigger UI scene construction
 
-        dg.tree.forEachArea(area => {                  // <- optional  
+        dungeon.tree.forEachArea(area => {                  // <- optional  
             let x = dungeon.map.tileToWorldX(area.x);
             let y = dungeon.map.tileToWorldY(area.y);
 

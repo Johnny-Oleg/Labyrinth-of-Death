@@ -113,6 +113,61 @@ function makeTree(area, iterations) { // splits the given area, places each side
 }
 
 export default class BSPDungeon {
+    constructor(config) {
+        let levels = [];
+
+        for (let c = 0; c < config.levels; c++) {
+            levels.push(new BSPLevel(config.width, config.height, config.iterations));
+        }
+
+        this.levels = levels;
+        this.currentLevel = 0;
+    }
+
+    getCurrentLevel() { // used to return the level data array to initialize the tilemap
+        return this.levels[this.currentLevel].toLevelData();
+    }
+
+    getRooms() { // used to place items and monsters into the level
+        return this.levels[this.currentLevel].getRooms();
+    }
+
+    getTree() { // used to compute the player position
+        return this.levels[this.currentLevel].tree;
+    }
+
+    goDown() {
+        if (this.currentLevel < this.levels.length - 1) {
+            this.currentLevel++;
+        } else {
+            console.error('can\'t go down, already at the bottom of the dungeon.');
+        }
+    }
+
+    goUp() {
+        if (this.currentLevel > 0) {
+            this.currentLevel--;
+        } else {
+            console.error('can\'t go up, already at top of the dungeon.');
+        }
+    }
+
+    getStairs() {        // It is quite crucial to double check if the player is at the top 
+        let stairs = {}; // of the dungeon or at its bottom
+
+        if (this.currentLevel < this.levels.length - 1) {
+            stairs.down = this.levels[this.currentLevel].down;
+        }
+
+        if (this.currentLevel > 0) {
+            stairs.up = this.levels[this.currentLevel].up;
+        }
+
+        return stairs;
+    }
+}
+
+class BSPLevel {
     constructor(width, height, iterations) {
         this.rootArea = new DArea(0, 0, width, height);
         this.tree = makeTree(this.rootArea, iterations);
@@ -120,6 +175,7 @@ export default class BSPDungeon {
         this.initializeLevelData();
         this.makeRooms();
         this.makeCorridors();
+        this.addStairs();
     }
 
     initializeLevelData() {     // makes sure we have a valid level data array 
@@ -189,6 +245,32 @@ export default class BSPDungeon {
         }
 
         makePath(this.tree);
+    }
+
+    addStairs() {   // place stairs down in the room at the right-most tree node
+        let node = this.tree.right;
+
+        while (node.right !== false) {
+            node = node.right;
+        }
+
+        let r = node.area.room;
+        let dx = Phaser.Math.Between(r.x + 1, r.x + r.w - 1);
+        let dy = Phaser.Math.Between(r.y + 1, r.y + r.h - 1);
+
+        this.down = {x: dx, y: dy};
+
+        node = this.tree.left;  // place stairs up in the room at the left-most tree node
+
+        while (node.left !== false) {
+            node = node.left;
+        }
+
+        r = node.area.room;
+        let ux = Phaser.Math.Between(r.x + 1, r.x + r.w - 1);
+        let uy = Phaser.Math.Between(r.y + 1, r.y + r.h - 1);
+
+        this.up = {x: ux, y: uy};
     }
 
     toLevelData() {
