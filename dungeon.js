@@ -1,7 +1,6 @@
 // import PF from 'pathfinding';
 import tm from './turnManager.js';
 import BSPDungeon from './BSPDungeon.js';
-// import level from './level.js';
 
 let dungeon = {
     msgs: [],        // array for messages
@@ -61,6 +60,11 @@ let dungeon = {
         this.map = map.createLayer(0, tileset, 0, 0);
     },
 
+    gameOver: function() {
+        this.ui.scene.stop();
+        this.scene.scene.start('game-over-scene');
+    },
+
     cleanup: function() {
         this.msgs = [];
 
@@ -72,6 +76,16 @@ let dungeon = {
         this.scene.cameras.main.once('camerafadeoutcomplete', () => {
             this.cleanup();
             this.dungeon.goDown(); // pointing at the instance of the BSPDungeon
+            this.scene.events.emit('dungeon-changed');
+        }, this);
+
+        this.scene.cameras.main.fadeOut(1000, 0, 0, 0);
+    },
+
+    goUp: function() {
+        this.scene.cameras.main.once('camerafadeoutcomplete', () => {
+            this.cleanup();
+            this.dungeon.goUp(); // pointing at the instance of the BSPDungeon
             this.scene.events.emit('dungeon-changed');
         }, this);
 
@@ -213,8 +227,8 @@ let dungeon = {
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;
 
-        let ranged = weapon.range() ? weapon.attackTile : false;    //? err?
-        let tint = weapon.range() && weapon.tint ? weapon.tint : false; //? err?
+        let ranged = weapon.range?.() ? weapon.attackTile : false;    //? err?
+        let tint = weapon.range?.() && weapon.tint ? weapon.tint : false; //? err?
 
         if (!ranged) {                          // close melee attack
             this.scene.tweens.add({

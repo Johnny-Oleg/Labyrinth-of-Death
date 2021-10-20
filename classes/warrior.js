@@ -7,8 +7,10 @@ class Warrior extends BasicHero {     // ? change to knight
         super(x, y);
 
         this.name = 'Warrior';
+        this.tile = 28;
+        this.hp = 30;
         this.mp = 3;
-        this.ap = 2;
+        this.ap = 4;
         this.items.push(new Sword()); // starting weapon
         this.toggleItem(0);
 

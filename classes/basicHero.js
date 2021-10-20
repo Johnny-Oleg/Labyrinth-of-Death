@@ -280,9 +280,9 @@ class BasicHero extends Taggable {
     }
 
     onDestroy() {
-        alert('You died...');
-        
-        location.reload();
+        dungeon.gameOver();
+        // alert('You died...');
+        // location.reload();
     }
 
     createUI(config) {

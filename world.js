@@ -7,7 +7,7 @@ import { getRandomEnemy } from './enemies.js';
 
 const world = {
     key: 'world-scene',
-    active: true,
+    active: false,
 
     preload: function () {
         this.load.spritesheet('tiles', 'assets/colored_transparent.png', {
@@ -46,11 +46,9 @@ const world = {
         
         let r = node.area.room;
         let p = dungeon.randomWalkableTileInRoom(r.x, r.y, r.w, r.h);
-
-       // load game entities
         
-       if (!dungeon.player) {
-           dungeon.player = new classes.Elf(p.x, p.y);
+       if (!dungeon.player) {               // load game entities
+           dungeon.player = new classes[dungeon.hero](p.x, p.y);
        } else {
            dungeon.player.x = p.x;
            dungeon.player.y = p.y;
@@ -59,12 +57,12 @@ const world = {
            dungeon.initializeEntity(dungeon.player);
        }
 
-        tm.addEntity(dungeon.player);                 // adding player character to level
+        tm.addEntity(dungeon.player);       // adding player character to level
 
-        rooms.forEach(room => { // weightedPick function returns a random element 
+        rooms.forEach(room => {             // weightedPick function returns a random element 
             let area = room.w * room.h;     // from the array biased toward the initial elements
-            let monsterCount = 0;                        // adding enemies to level
-            let itemCount = 0;                           // adding items to level
+            let monsterCount = 0;           // adding enemies to level
+            let itemCount = 0;              // adding items to level
 
             let roomType = Phaser.Math.RND.weightedPick( [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3]);
                                 // by repeating elements, we increase the chances of them happening,
