@@ -3,6 +3,7 @@ import ui from './ui.js';
 import world from './world.js';
 import intro from './intro.js';
 import gameOver from './gameover.js';
+import questComplete from './questComplete.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -12,7 +13,7 @@ const config = {
     parent: 'game',
     pixelArt: true,
     zoom: 1.14,                  // camera zoom: min 1 to... max
-    scene: [intro, world, ui, gameOver],
+    scene: [intro, world, ui, gameOver, questComplete],
     physics: {
         default: 'arcade',
         arcade: {

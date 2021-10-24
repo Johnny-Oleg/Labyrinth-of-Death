@@ -1,6 +1,7 @@
 // import PF from 'pathfinding';
 import tm from './turnManager.js';
 import BSPDungeon from './BSPDungeon.js';
+import quest from './quest.js';
 
 let dungeon = {
     msgs: [],        // array for messages
@@ -58,11 +59,18 @@ let dungeon = {
         )
 
         this.map = map.createLayer(0, tileset, 0, 0);
+
+        quest.forEach(f => f()); // causes all the functions to run for each level that is initialized
     },
 
     gameOver: function() {
         this.ui.scene.stop();
         this.scene.scene.start('game-over-scene');
+    },
+
+    questComplete: function() {
+        this.ui.scene.stop();
+        this.scene.scene.start('quest-complete-scene');
     },
 
     cleanup: function() {
