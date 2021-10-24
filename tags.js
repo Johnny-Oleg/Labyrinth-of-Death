@@ -11,7 +11,7 @@ import poison from './tags/poison.js';
 import royal from './tags/royal.js';
 import silver from './tags/silver.js';
 
-let tags = {
+const tags = {
     aggro,
     burning,
     cursed,

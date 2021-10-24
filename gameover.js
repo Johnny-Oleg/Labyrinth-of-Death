@@ -1,9 +1,11 @@
 const gameOver = {
     key: 'game-over-scene',
     active: false,
+
     preload: function () {
 
     },
+
     create: function() {
         const x = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const y = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -22,6 +24,7 @@ const gameOver = {
             location.reload();
         })
     },
+    
     update: function () {
 
     },

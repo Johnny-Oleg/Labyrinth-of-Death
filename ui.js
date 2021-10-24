@@ -16,11 +16,11 @@ const ui = {
         this.scene.get('world-scene').events.once('createUI', () => {
             let iterator = tm.entities.values();
             
-            let x = 80 * 16 - 190; // ui column horizontal position
-            let y = 10;            // ui column vertical position
+            let x = (80 * 16) - 190;    // ui column horizontal position
+            let y = 10;                 // ui column vertical position
 
             for (let entity of iterator) {
-                if (typeof entity.createUI === "function") {
+                if (typeof entity.createUI === 'function') {
                     let height = entity.createUI({scene: this, x, y, width: 198});
 
                     y += height;

@@ -56,8 +56,8 @@ class DRoom {   // use random number generation to decide the position and dimen
 }
 
 function splitArea(area) {
-    let x1, y1, w1, h1 = 0; // x1, y1, w1, and h1 represent one area
-    let x2, y2, w2, h2 = 0; // and the x2, y2, w2, and h2 the other area
+    let x1, y1, w1, h1 = false; // default 0; x1, y1, w1, and h1 represent one area
+    let x2, y2, w2, h2 = false; // and the x2, y2, w2, and h2 the other area
 
     if (Phaser.Math.Between(0, 1) == 0) {  // vertical
         let divider = Phaser.Math.Between(1, area.w);
@@ -195,7 +195,7 @@ class BSPLevel {
     fillRect(x, y, w, h, tile) { // carves rectangles in the shape of our rooms
         for (let y1 = y; y1 < y + h; y1++) {
             for (let x1 = x; x1 < x + w; x1++) {
-                this.levelData[y1][x1] = tile;
+                this.levelData[y1][x1] = tile;      
             }
         }
     }

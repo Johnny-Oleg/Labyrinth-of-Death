@@ -29,6 +29,7 @@ const world = {
         
         let rooms = dungeon.rooms;          // get rooms
         let stairs = dungeon.stairs;        // add stairs
+        let node = dungeon.tree.left;
 
         if (stairs.down) {
             tm.addEntity(new Stairs(stairs.down.x, stairs.down.y, 'down'));
@@ -38,8 +39,6 @@ const world = {
             tm.addEntity(new Stairs(stairs.up.x, stairs.up.y, 'up'));
         }
 
-        let node = dungeon.tree.left;
-
         while (node.left !== false) {       // places player in the room at the left-most tree node
             node = node.left;
         }
@@ -47,20 +46,20 @@ const world = {
         let r = node.area.room;
         let p = dungeon.randomWalkableTileInRoom(r.x, r.y, r.w, r.h);
         
-       if (!dungeon.player) {               // load game entities
-           dungeon.player = new classes[dungeon.hero](p.x, p.y);
-       } else {
-           dungeon.player.x = p.x;
-           dungeon.player.y = p.y;
-           dungeon.player.refresh();
+        if (!dungeon.player) {               // load game entities
+            dungeon.player = new classes[dungeon.hero](p.x, p.y);
+        } else {
+            dungeon.player.x = p.x;
+            dungeon.player.y = p.y;
+            dungeon.player.refresh();
 
-           dungeon.initializeEntity(dungeon.player);
-       }
+            dungeon.initializeEntity(dungeon.player);
+        }
 
         tm.addEntity(dungeon.player);       // adding player character to level
 
         rooms.forEach(room => {             // weightedPick function returns a random element 
-            let area = room.w * room.h;     // from the array biased toward the initial elements
+            // let area = room.w * room.h;     // from the array biased toward the initial elements
             let monsterCount = 0;           // adding enemies to level
             let itemCount = 0;              // adding items to level
 
@@ -107,7 +106,7 @@ const world = {
         })
 
         let camera = this.cameras.main; // set camera, causes game viewport to shrink on the right side freeing space for the UI scene
-        camera.setViewport(0, 0, camera.worldView.width - 200, camera.worldView.height);
+        camera.setViewport(0, 0, dungeon.map.displayWidth - 220, dungeon.map.displayHeight);
         camera.setBounds(0, 0, this.game.config.width, this.game.config.height);
         camera.startFollow(dungeon.player.sprite);
 

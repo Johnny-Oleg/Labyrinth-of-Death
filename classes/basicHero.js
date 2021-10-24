@@ -251,7 +251,7 @@ class BasicHero extends Taggable {
                 }
 
                 if (entity && entity.type === 'stairs') { // check if entity at destination is a stair
-                    if (entity.direction == "down") {
+                    if (entity.direction == 'down') {
                         dungeon.goDown();
                     } else {
                         dungeon.goUp();
@@ -316,8 +316,8 @@ class BasicHero extends Taggable {
 
         for (let row = 1; row <= rows; row++) {
             for (let cell = 1; cell <= itemsPerRow; cell++) {
-                let rx = x + 25 * cell;
-                let ry = y + 50 + 25 * row;
+                let rx = x + (25 * cell);
+                let ry = y + 50 + (25 * row);
 
                 this.UIitems.push(this.UIscene.add
                     .rectangle(rx, ry, 20, 20, 0xcfc6b8, 0.3)

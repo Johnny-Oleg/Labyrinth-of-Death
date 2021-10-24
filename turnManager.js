@@ -1,14 +1,16 @@
 const tm = {                // <- turn manager
     entities: new Set(),
+    currentIndex: 0,
 
     addEntity: entity => tm.entities.add(entity),
     removeEntity: entity => tm.entities.remove(entity),
+    removeAllEntities: () => tm.entities = new Set(),
 
     refresh: () => {
         tm.entities.forEach(entity => entity.refresh());
         tm.currentIndex = 0;
     },
-    currentIndex: 0,
+
     turn: () => {
         if (tm.entities.size > 0) {
             let entities = [...tm.entities];
@@ -21,7 +23,9 @@ const tm = {                // <- turn manager
             }
         }
     },
+
     over: () => [...tm.entities].every(entity => entity.over()),
+
     cleanup: () => {
         tm.entities.forEach(entity => {
             if (entity.sprite) {
@@ -35,6 +39,6 @@ const tm = {                // <- turn manager
 
         tm.removeAllEntities();
     }
-};
+}
 
 export default tm;

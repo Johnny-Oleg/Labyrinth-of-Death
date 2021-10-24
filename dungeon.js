@@ -32,8 +32,8 @@ let dungeon = {
 
         this.level = this.dungeon.getCurrentLevel();
         this.rooms = this.dungeon.getRooms();
-        this.tree = this.dungeon.getTree();
         this.stairs = this.dungeon.getStairs();
+        this.tree = this.dungeon.getTree();
         this.scene = scene;
 
         this.levelWithTiles = this.level.map(row => { // return required!
@@ -133,13 +133,13 @@ let dungeon = {
     },
 
     randomWalkableTileInRoom: function(x, y, w, h) { // loops over rooms and decides what to do for each room
-        let rx = Phaser.Math.Between(x, x + w - 1);
-        let ry = Phaser.Math.Between(y, y + h - 1);
+        let rx = Phaser.Math.Between(x, (x + w) - 1);
+        let ry = Phaser.Math.Between(y, (y + h) - 1);
         let tileAtDestination = dungeon.map.getTileAt(rx, ry);
 
         while (typeof tileAtDestination == 'undefined' || tileAtDestination.index == dungeon.sprites.wall) {
-            rx = Phaser.Math.Between(x, x + w - 1);
-            ry = Phaser.Math.Between(y, y + h - 1);
+            rx = Phaser.Math.Between(x, (x + w) - 1);
+            ry = Phaser.Math.Between(y, (y + h) - 1);
 
             tileAtDestination = dungeon.map.getTileAt(rx, ry);
         }
@@ -189,12 +189,14 @@ let dungeon = {
     },
 
     removeEntity: function(entity) {
-        entity?.sprite?.destroy();        //! err? quick bux fix
-
-        delete entity.sprite;
-
-        entity.type !== 'item' && entity.onDestroy();           //! err? for items  quick bug fix
-        tm.entities.delete(entity);
+        if (entity.sprite) {
+            entity.sprite.destroy();        //! err? quick bux fix
+    
+            delete entity.sprite;
+            entity.onDestroy();
+            // entity.type !== 'item' && entity.onDestroy();           //! err? for items  quick bug fix
+            tm.entities.delete(entity);
+        }
     },
 
     itemPicked: function(entity) {
@@ -214,7 +216,7 @@ let dungeon = {
             x: this.map.tileToWorldX(x),
             y: this.map.tileToWorldY(y),
             ease: 'Power2',
-            duration: 200,
+            duration: 100,      // default 200
         })
     },
 
@@ -251,6 +253,8 @@ let dungeon = {
                     let attack = attacker.attack();
                     let defence = target.defence();
                     let damage = attack - defence;
+
+                    // this.log(`${target.name} defends with ${defence}.`) // optional
 
                     if (damage > 0) {
                         target.hp -= damage;

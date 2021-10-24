@@ -24,11 +24,11 @@ class GenericItem extends Taggable {
         return 0;
     }
 
-    ranged() {
+    range() {
         return 0;
     }
 
-    protection() {
+    defence() {
         return 0;
     }
 
