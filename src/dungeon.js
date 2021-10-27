@@ -1,6 +1,6 @@
 // import PF from 'pathfinding';
 import tm from './turnManager.js';
-import BSPDungeon from './BSPDungeon.js';
+import BSPDungeon from './bspdungeon.js';
 import quest from './quest.js';
 
 let dungeon = {

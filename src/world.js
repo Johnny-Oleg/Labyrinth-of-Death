@@ -112,17 +112,17 @@ const world = {
 
         this.events.emit('createUI');   // trigger UI scene construction
 
-        dungeon.tree.forEachArea(area => {                  // <- optional  
-            let x = dungeon.map.tileToWorldX(area.x);
-            let y = dungeon.map.tileToWorldY(area.y);
+        // dungeon.tree.forEachArea(area => {                  // <- optional  
+        //     let x = dungeon.map.tileToWorldX(area.x);
+        //     let y = dungeon.map.tileToWorldY(area.y);
 
-            let w = area.w * 16;
-            let h = area.h * 16;
+        //     let w = area.w * 16;
+        //     let h = area.h * 16;
 
-            this.add.rectangle(x, y, w, h)
-                .setStrokeStyle(4, 0xff0000, 1, 0.7)
-                .setOrigin(0);
-        })
+        //     this.add.rectangle(x, y, w, h)
+        //         .setStrokeStyle(4, 0xff0000, 1, 0.7)
+        //         .setOrigin(0);
+        // })
     },
 
     update: function() {

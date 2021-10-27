@@ -52,14 +52,6 @@ class BasicHero extends Taggable {
 
                 item.equip(itemNumber, this);
             }
-
-            // if (item.class === 'sword') { //* change player sprite regardless of weapon
-            //     this.tile = 28;
-            // }
-
-            // if (item.class === 'spear') { //* change player sprite regardless of weapon
-            //     this.tile = 29;
-            // }
         }
     }
 
@@ -137,7 +129,6 @@ class BasicHero extends Taggable {
     }
 
     refresh() {
-        // this.hp < 6 && this.hp++;     // health regen by 1
         this.mp = 1;
         this.ap = 1;
     }
@@ -281,8 +272,6 @@ class BasicHero extends Taggable {
 
     onDestroy() {
         dungeon.gameOver();
-        // alert('You died...');
-        // location.reload();
     }
 
     createUI(config) {

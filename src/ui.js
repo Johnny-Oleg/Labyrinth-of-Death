@@ -11,7 +11,7 @@ const ui = {
 
         this.scene.get('world-scene').events.once('dungeon-changed', () => {
             this.scene.restart();
-        });
+        })
 
         this.scene.get('world-scene').events.once('createUI', () => {
             let iterator = tm.entities.values();
@@ -38,6 +38,7 @@ const ui = {
             })
 
             this.createdUI = true;
+            dungeon.ui = this;
         })
     },
 
