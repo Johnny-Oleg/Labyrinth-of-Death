@@ -213,7 +213,7 @@ class BasicHero extends Taggable {
             if (!dungeon.isWalkableTile(newX, newY)) { // check if entity at destination is an enemy
                 let entity = dungeon.entityAtTile(newX, newY);
 
-                if (entity && entity.type === 'enemy' && entity.type !== 'item' && this.ap > 0) { //* ?
+                if (entity && entity.type == 'enemy' && entity.type !== 'item' && this.ap > 0) { //* ?
                     const currentWeapon = this.currentWeapon();
 
                     // const rangedAttack = currentWeapon.range?.() > 0 ? //! err? quick bug fix

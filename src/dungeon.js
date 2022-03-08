@@ -237,10 +237,10 @@ let dungeon = {
         attacker.tweens = attacker.tweens || 0;
         attacker.tweens += 1;
 
-        let ranged = weapon.range?.() ? weapon.attackTile : false;    //? err?
+        let rangedAttack = weapon.range?.() ? weapon.attackTile : false;    //? err?
         let tint = weapon.range?.() && weapon.tint ? weapon.tint : false; //? err?
 
-        if (!ranged) {                          // close melee attack
+        if (!rangedAttack) {                          // close melee attack
             this.scene.tweens.add({
                 targets: attacker.sprite,
                 onComplete: () => {
@@ -254,7 +254,7 @@ let dungeon = {
                     let defence = target.defence();
                     let damage = attack - defence;
 
-                    // this.log(`${target.name} defends with ${defence}.`) // optional
+                    this.log(`${target.name} defends with ${defence}.`) // optional
 
                     if (damage > 0) {
                         target.hp -= damage;
@@ -281,7 +281,7 @@ let dungeon = {
         } else {                                         // ranged attack
             const x = this.map.tileToWorldX(attacker.x);
             const y = this.map.tileToWorldX(attacker.y); //? X
-            const sprite = dungeon.scene.add.sprite(x, y, 'tiles', ranged).setOrigin(0);
+            const sprite = dungeon.scene.add.sprite(x, y, 'tiles', rangedAttack).setOrigin(0);
 
             if (tint) {
                 sprite.tint = tint; 

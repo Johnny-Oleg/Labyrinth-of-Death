@@ -51,15 +51,15 @@ const world = {
         } else {
             dungeon.player.x = p.x;
             dungeon.player.y = p.y;
-            dungeon.player.refresh();
 
+            dungeon.player.refresh();
             dungeon.initializeEntity(dungeon.player);
         }
 
         tm.addEntity(dungeon.player);       // adding player character to level
 
         rooms.forEach(room => {             // weightedPick function returns a random element 
-            // let area = room.w * room.h;     // from the array biased toward the initial elements
+            // let area = room.w * room.h;  // from the array biased toward the initial elements
             let monsterCount = 0;           // adding enemies to level
             let itemCount = 0;              // adding items to level
 
@@ -88,7 +88,7 @@ const world = {
                     break;  // used to alter how many items and monsters are in each room depending on the value of the roomType variable
             }   
             
-            while(monsterCount > 0) {    // places the entities in the correct location
+            while (monsterCount > 0) {    // places the entities in the correct location
                 let tile = dungeon.randomWalkableTileInRoom(room.x, room.y, room.w, room.h)
     
                 tm.addEntity(getRandomEnemy(tile.x, tile.y));
@@ -96,7 +96,7 @@ const world = {
                 monsterCount--;
             }
 
-            while(itemCount > 0) {
+            while (itemCount > 0) {
                 let tile = dungeon.randomWalkableTileInRoom(room.x, room.y, room.w, room.h)
     
                 tm.addEntity(getRandomItem(tile.x, tile.y));

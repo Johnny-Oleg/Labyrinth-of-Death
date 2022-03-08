@@ -28,7 +28,7 @@ const intro = {
             color: '#cfc6b8',
         }).setOrigin(0.5);
 
-        for (let h = 0; h < classNames.length; h++) {
+        for (let h = 0; h < 5; h++) {   // or h < classNames.length
             let inc = 50 * h;
             
             this.add.text(x, y + 80 + inc, `${h + 1} - ${classNames[h]}`, {

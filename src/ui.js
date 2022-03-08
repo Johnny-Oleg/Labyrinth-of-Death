@@ -3,7 +3,7 @@ import dungeon from './dungeon.js';
 
 const ui = {
     key: 'ui-scene',
-    active: true,
+    active: false,
 
     create: function () {
         console.log('create ui');
