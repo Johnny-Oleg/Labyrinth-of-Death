@@ -17,6 +17,7 @@ class BasicHero extends Taggable {
         this.ap = 1;             // action points
         this.moving = false;
         this.items = [];         // array of items for player
+        this.cti = null;         // current targeted item
     }
 
     setEvents() {
@@ -55,7 +56,7 @@ class BasicHero extends Taggable {
         }
     }
 
-    removeItem(itemNumber) {                 //? removing useless item by clicking func?
+    removeItem(itemNumber) {                 
         const item = this.items[itemNumber];
 
         if (item) {
@@ -70,6 +71,21 @@ class BasicHero extends Taggable {
             this.refreshUI();
         }
     }
+
+    throwAwayItem(itemNumber) {                             // throw away targeted useless item
+        if (itemNumber && itemNumber.weapon && !itemNumber.active) {
+            this.items.forEach(item => {
+                item.UIsprite.destroy();
+
+                delete item.UIsprite;
+            });
+
+            this.items = this.items.filter(i => i !== itemNumber);
+
+            this.refreshUI();
+        }     
+    }
+
 
     removeItemByProperty(prop, value) {
         this.items.forEach(item => {
@@ -163,6 +179,7 @@ class BasicHero extends Taggable {
         let newY = this.y;
         let moved = false;
         let key = e.key;
+        
 
         if (!isNaN(Number(key))) {       // equip items
             key == 0 && (key = 10);
@@ -194,6 +211,13 @@ class BasicHero extends Taggable {
             newY += 1;
             moved = true;
         }
+
+        if (e.key == 't') {        
+            this.throwAwayItem(this.cti);
+
+            return 
+        }
+
 
         if (e.key == 'd') {        // go down the dungeon
             dungeon.goDown();
@@ -230,7 +254,8 @@ class BasicHero extends Taggable {
                 if (entity && entity.type === 'item' && this.ap > 0) {
                     if (this.items.length < 10) {       // items arr fullness check
                         this.items.push(entity);        // picking items
-    
+                        console.log(this.items);
+
                         dungeon.itemPicked(entity);
                         dungeon.log(`${this.name} picked ${entity.name}: ${entity.description}`);
                     }
@@ -336,6 +361,9 @@ class BasicHero extends Taggable {
                 item.UIsprite.on('pointerup', pointer => {
                     if (pointer.leftButtonReleased()) {
                         dungeon.describeEntity(item);
+
+                        this.cti = item;
+                        console.log('point item', item);
                     }
                 })
 
