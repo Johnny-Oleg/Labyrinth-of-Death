@@ -21,7 +21,7 @@ let dungeon = {
                 width: 80,
                 height: 50,
                 iterations: 4,
-                levels: 5,
+                levels: 6,      // 5
             }
 
             this.dungeon = new BSPDungeon(dungeonConfig);

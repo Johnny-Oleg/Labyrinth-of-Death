@@ -18,6 +18,9 @@ class BasicHero extends Taggable {
         this.moving = false;
         this.items = [];         // array of items for player
         this.cti = null;         // current targeted item
+        this.lvl = 1;            // TODO:
+        this.gold = 0;           // TODO:
+        // this.cf = dungeon.dungeon.currentLevel + 1; // current dungeon floor
     }
 
     setEvents() {
@@ -73,7 +76,7 @@ class BasicHero extends Taggable {
     }
 
     throwAwayItem(itemNumber) {                             // throw away targeted useless item
-        if (itemNumber && itemNumber.weapon && !itemNumber.active) {
+        if (itemNumber && itemNumber.weapon && itemNumber.active === false) {
             this.items.forEach(item => {
                 item.UIsprite.destroy();
 
@@ -305,7 +308,6 @@ class BasicHero extends Taggable {
         let x = config.x;
         let y = config.y;
         let ah = 0;         // accumulated height
-
                             // character sprite and name
         this.UIsprite = this.UIscene.add.sprite(x, y, 'tiles', this.tile).setOrigin(0);
         this.UIheader = this.UIscene.add.text(x + 20, y, this.name, {
@@ -316,6 +318,13 @@ class BasicHero extends Taggable {
                             // character stats
         this.UIstatsText = this.UIscene.add.text(x + 20, y + 20,
             `Hp: ${this.hp}\nMp: ${this.mp}\nAp: ${this.ap}`, {
+                font: '12px Arial',
+                fill: '#cfc6b8',
+            }
+        )
+
+        this.UIinfoText = this.UIscene.add.text(x + 106, y + 20, 
+            `Lvl: ${this.lvl}\nGold: ${this.gold}\nFloor: ${dungeon.dungeon.currentLevel}`, {
                 font: '12px Arial',
                 fill: '#cfc6b8',
             }
@@ -388,12 +397,19 @@ class BasicHero extends Taggable {
                 `Hp: ${this.hp}\nMp: ${this.mp}\nAp: ${this.ap}`
             )
         }
+
+        if (this.UIinfoText) {
+            this.UIinfoText.setText(
+                `Lvl: ${this.lvl}\nGold: ${this.gold}\nFloor: ${dungeon.dungeon.currentLevel}`
+            )
+        }
     }
 
     cleanup() {
+        delete this.UIsprite;
         delete this.UIheader;
         delete this.UIstatsText;
-        delete this.UIsprite;
+        delete this.UIinfoText;
         delete this.UIitems;
         delete this.UIscene;
         delete this.sprite;

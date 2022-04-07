@@ -121,7 +121,7 @@ export default class BSPDungeon {
         }
 
         this.levels = levels;
-        this.currentLevel = 0;
+        this.currentLevel = 1; // 0
     }
 
     getCurrentLevel() { // used to return the level data array to initialize the tilemap
@@ -145,7 +145,7 @@ export default class BSPDungeon {
     }
 
     goUp() {
-        if (this.currentLevel > 0) {
+        if (this.currentLevel > 1) { // > 0
             this.currentLevel--;
         } else {
             console.error('can\'t go up, already at top of the dungeon.');
@@ -159,7 +159,7 @@ export default class BSPDungeon {
             stairs.down = this.levels[this.currentLevel].down;
         }
 
-        if (this.currentLevel > 0) {
+        if (this.currentLevel > 1) { // > 0
             stairs.up = this.levels[this.currentLevel].up;
         }
 

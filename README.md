@@ -8,7 +8,7 @@ click on enemies for ranged attack or view a description at info ui
 
 Install NodeJS from https://nodejs.org
 
-On a terminal install a globally available `live-server` with:
+Install a globally available `live-server` with:
 
 ``` 
 $ npm i -g live-server
