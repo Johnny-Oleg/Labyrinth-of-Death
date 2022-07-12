@@ -129,7 +129,7 @@ let dungeon = {
                 tileAtDestination = dungeon.map.getTileAt(x, y);
             }
             
-            return {x, y}; // the function works by picking a random location and then checking if it is a wall or not. If it is, then it loops picking a different location. The resulting value is an object with coordinates.
+        return {x, y}; // the function works by picking a random location and then checking if it is a wall or not. If it is, then it loops picking a different location. The resulting value is an object with coordinates.
     },
 
     randomWalkableTileInRoom: function(x, y, w, h) { // loops over rooms and decides what to do for each room
@@ -137,12 +137,13 @@ let dungeon = {
         let ry = Phaser.Math.Between(y, (y + h) - 1);
         let tileAtDestination = dungeon.map.getTileAt(rx, ry);
 
-        while (typeof tileAtDestination == 'undefined' || tileAtDestination.index == dungeon.sprites.wall) {
-            rx = Phaser.Math.Between(x, (x + w) - 1);
-            ry = Phaser.Math.Between(y, (y + h) - 1);
+        while (typeof tileAtDestination == 'undefined' ||
+            tileAtDestination.index == dungeon.sprites.wall) {
+                rx = Phaser.Math.Between(x, (x + w) - 1);
+                ry = Phaser.Math.Between(y, (y + h) - 1);
 
-            tileAtDestination = dungeon.map.getTileAt(rx, ry);
-        }
+                tileAtDestination = dungeon.map.getTileAt(rx, ry);
+            }
 
         return {x: rx, y: ry};      // Phaser's weightedPick?
     },

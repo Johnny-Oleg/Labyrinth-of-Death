@@ -49,6 +49,14 @@ class BasicHero extends Taggable {
                 this.items.forEach(item => item.active = item.weapon ? false : item.active);
             }
 
+            if (item.shield) {                
+                this.items.forEach((item, idx) => {   // check to unequip previous shield
+                    if (itemNumber !== idx) {
+                        item.active = item.shield ? false : item.active
+                    }
+                })
+            }
+
             item.active = !item.active;
 
             if (item.active) {
@@ -61,29 +69,33 @@ class BasicHero extends Taggable {
 
     removeItem(itemNumber) {                 
         const item = this.items[itemNumber];
-
+        
         if (item) {
             this.items.forEach(item => {
                 item.UIsprite.destroy();
 
                 delete item.UIsprite;
+                // this.refreshUI();    // TODO render ui bug
             })
-
+            
             this.items = this.items.filter(i => i !== item);
-
+            
             this.refreshUI();
         }
     }
-
-    throwAwayItem(itemNumber) {                             // throw away targeted useless item
-        if (itemNumber && itemNumber.weapon && itemNumber.active === false) {
+    
+    throwAwayItem(currenTargetItem) {                // throw away targeted useless item
+        const cti = currenTargetItem;               
+        
+        if (cti && cti.active === false) {                // cti.weapon && cti.active === false
             this.items.forEach(item => {
                 item.UIsprite.destroy();
-
-                delete item.UIsprite;
-            });
-
-            this.items = this.items.filter(i => i !== itemNumber);
+                
+                delete item.UIsprite;             
+                // this.refreshUI();    // TODO render ui bug
+            })
+            
+            this.items = this.items.filter(i => i !== cti);
 
             this.refreshUI();
         }     
@@ -111,6 +123,13 @@ class BasicHero extends Taggable {
         const weapon = items.find(w => w.weapon);
 
         return weapon;
+    }
+
+    currentShield() {
+        const items = this.equippedItems();
+        const shield = items.find(s => s.shield);
+
+        return shield;
     }
 
     attack() {
@@ -182,7 +201,6 @@ class BasicHero extends Taggable {
         let newY = this.y;
         let moved = false;
         let key = e.key;
-        
 
         if (!isNaN(Number(key))) {       // equip items
             key == 0 && (key = 10);
@@ -190,7 +208,7 @@ class BasicHero extends Taggable {
             this.toggleItem(key - 1);
         }
 
-        if (e.keyCode == 32) {          // pass the turn press spacebar
+        if (e.key == ' ') {          // pass the turn press spacebar (keyCode 32)
             this.mp = 0;
             this.ap = 0;
         }

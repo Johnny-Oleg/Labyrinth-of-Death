@@ -7,6 +7,7 @@ class Shield extends GenericItem {
 
         this.name = 'a Shield';
         this.tile = 134;            // 776
+        this.shield = true;
         this.description = 'A basic shield, gives 1 point to defense.';
 
         dungeon.initializeEntity(this);

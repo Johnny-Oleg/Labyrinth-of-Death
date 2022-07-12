@@ -7,6 +7,8 @@ class GenericItem extends Taggable {
         this.name = 'Nameless Item';
         this.type = 'item';
         this.weapon = false;
+        this.shield = false;
+        this.armor = false;
         this.active = false;
         this.description = 'Some description';
 
